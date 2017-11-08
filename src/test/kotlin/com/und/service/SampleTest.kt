@@ -2,6 +2,10 @@ package com.und.service
 
 import com.und.model.Email
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit4.SpringRunner
 import javax.mail.Message
 import javax.mail.Session
 import javax.mail.internet.InternetAddress
@@ -9,6 +13,8 @@ import javax.mail.internet.MimeMessage
 
 //http://websystique.com/spring/spring-4-email-using-velocity-freemaker-template-library/
 
+@RunWith(SpringRunner::class)
+@SpringBootTest
 class SampleTest {
     // Replace sender@example.com with your "From" address.
 // This address must be verified.
@@ -45,16 +51,18 @@ class SampleTest {
             " for <a href='https://www.java.com'>Java</a>.").joinToString(
             System.getProperty("line.separator"))
 
+    @Autowired
+    private lateinit var emailSendService: EmailSendService
+
     @Test
     fun testEmailSend() {
-        val email: Email = Email(
-                InternetAddress(FROM, FROMNAME),
+        val email: Email = Email(clientID = 1,
+                fromEmailAddress = InternetAddress(FROM, FROMNAME),
                 toEmailAddresses = arrayOf(InternetAddress(TO)),
                 emailSubject = SUBJECT,
                 emailBody = BODY)
-        val emailSMTPConfig = EmailSMTPConfig(HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
+        val emailSMTPConfig = EmailSMTPConfig(1, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
 
-        val emailSendService = EmailSendService()
         emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
     }
 
