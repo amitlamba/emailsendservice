@@ -1,7 +1,8 @@
 buildscript {
-    ext.kotlin_version = '1.1.50'
+    ext.kotlin_version = '1.1.51'
     ext.spring_boot_version = '2.0.0.M5'
     repositories {
+        mavenLocal()
         mavenCentral()
         maven { url 'https://repo.spring.io/libs-snapshot' }
         maven { url "https://repo.spring.io/snapshot" }
@@ -11,9 +12,8 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Required for Kotlin integration
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
-        // See https://kotlinlang.org/docs/reference/compiler-plugins.html#kotlin-spring-compiler-plugin
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
-        classpath "com.moowork.gradle:gradle-node-plugin:1.1.0"
+        classpath('io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE')
     }
 }
 
@@ -23,10 +23,9 @@ apply plugin: 'kotlin' // Required for Kotlin integration
 apply plugin: 'java'
 apply plugin: "kotlin-spring" // See https://kotlinlang.org/docs/reference/compiler-plugins.html#kotlin-spring-compiler-plugin
 apply plugin: 'org.springframework.boot'
-
+apply plugin: 'io.spring.dependency-management'
 apply plugin: "jacoco"
 apply plugin: 'findbugs'
-apply plugin: "com.moowork.node"
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -40,12 +39,38 @@ jacocoTestReport {
         html.destination file("${buildDir}/reports/jacocoHtml")
     }
 }
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+        reportLevel = "low"
+        ignoreFailures = true
+        html.destination file("${buildDir}/reports/findBugsHtml")
+    }
+}
 
+ext {
+    commonsLangVersion = '3.5'
+    flywayVersion= '3.2.1'
+    jstlVersion = '1.2'
+    taglibVersion = '1.1.2'
+    javaxElVersion = '2.2.1-b04'
+    bitWalkerUagentVersion = '1.20'
+    kotlinVersion = '1.1.51'
+    springbootVersion = '2.0.0.M3'
+    aspectjVersion = '1.8.7'
+    jsonPathVersion = '2.1.0'
+    swaggerVersion = '2.7.0'
+    springkafkaVersion = '2.0.0.RELEASE'
+    pgDriverVersion = '9.4-1206-jdbc42'
+    jjwtVersion = '0.9.0'
+    gauvaVersion = '19.0'
+    bootRedisVersion = '1.4.7.RELEASE'
+    dataRedisVersion = '2.0.0.RELEASE'
+    jedisVersion = '2.9.0'
+    quartzVersion = '2.3.0'
 
-ext.kotlinVersion = '1.1.50'
-ext.springbootVersion = '2.0.0.M5'
-ext.aspectjVersion = '1.8.7'
-ext.jsonPathVersion = '2.1.0'
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -56,8 +81,8 @@ repositories {
     maven { url "https://repo.spring.io/snapshot" }
     maven { url "https://repo.spring.io/milestone" }
     jcenter()
+    mavenLocal()
 }
-
 
 jar {
     group = 'com.und'
@@ -65,93 +90,49 @@ jar {
     version = '0.1.0'
 }
 
-node
-        {
-            version = "7.5.0"
-            download = true
-            nodeModulesDir = file("frontend")
-        }
 
-task buildClientDev(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'build'
-    description = 'Compile client side folder for development'
-    args = ['run', 'buildDev']
-}
-task buildClient(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'build'
-    description = "Compile client side folder for production"
-    args = ['run', 'build']
-}
-task buildClientWatch(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'application'
-    description = "Build and watches the client side assets for rebuilding"
-    args = ['run', 'buildWatch']
-}
 
 dependencies {
-    testCompile(
-            'junit:junit:4.12',
-//            'org.springframework.security:spring-security-test:5.0.0.M5',
-
-    )
-    testCompile "org.mockito:mockito-core:1.+"
-    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: $springbootVersion) {
+    testCompile 'org.mockito:mockito-core:1.+'
+    testCompile group: 'com.nhaarman', name: 'mockito-kotlin', version: '1.5.0'
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
     }
     compile(
-            "org.springframework.boot:spring-boot-starter-web:$springbootVersion",
-            "org.springframework.boot:spring-boot-starter-data-jpa:$springbootVersion",
-            "org.springframework.boot:spring-boot-starter-data-rest:$springbootVersion",
-            "org.springframework.boot:spring-boot-starter-mobile:$springbootVersion",
-//            "org.springframework.boot:spring-boot-starter-security:$springbootVersion",
-            "org.springframework.boot:spring-boot-starter-data-mongodb:$springbootVersion",
-            "org.springframework.boot:spring-boot-actuator:$springbootVersion",
+            "org.springframework.boot:spring-boot-starter-web",
+            "org.springframework.boot:spring-boot-starter-data-jpa",
+            "org.springframework.boot:spring-boot-starter-data-rest",
+            "org.springframework.boot:spring-boot-starter-mobile",
+            "org.springframework.boot:spring-boot-starter-data-mongodb",
+            "org.springframework.boot:spring-boot-actuator",
+            "org.springframework.boot:spring-boot-starter-freemarker",
+            "org.springframework.boot:spring-boot-devtools",
             "org.aspectj:aspectjrt:$aspectjVersion",
             "org.aspectj:aspectjweaver:$aspectjVersion",
-            'org.postgresql:postgresql:9.4-1206-jdbc42',
-            'io.jsonwebtoken:jjwt:0.7.0',
-            'io.springfox:springfox-swagger2:2.7.0',
-            'io.springfox:springfox-swagger-ui:2.7.0',
-            'com.google.guava:guava:19.0',
-            'org.apache.commons:commons-lang3:3.5',
-//            'org.flywaydb:flyway-core:3.2.1',
-            'javax.servlet:jstl:1.2',
-            'jstl:jstl:1.2',
-            'taglibs:standard:1.1.2',
-            'javax.el:el-api:2.2.1-b04',
+            "org.postgresql:postgresql:$pgDriverVersion",
+            "io.jsonwebtoken:jjwt:$jjwtVersion",
+            "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
+            "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version",
 
     )
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-    compile "org.springframework.boot:spring-boot-devtools:$springbootVersion"
-    //compile("org.hibernate:hibernate-validator")
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
-    // https://mvnrepository.com/artifact/org.quartz-scheduler/quartz
-//    compile "org.quartz-scheduler:quartz:2.3.0"
-
-    // https://mvnrepository.com/artifact/javax.mail/mail
+    compile("org.springframework.kafka:spring-kafka")
+    compile("org.springframework.kafka:spring-kafka-test")
     compile group: 'javax.mail', name: 'mail', version: '1.5.0-b01'
+    compile( "com.amazonaws:aws-java-sdk-ses:1.11.221")
+    compile( "com.amazonaws:aws-java-sdk-sns:1.11.221")
+    compile("log4j:log4j")
 
-    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-ses
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-ses', version: '1.11.221'
-    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sns
-    compile group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.11.221'
-
-
-    //kafka
-    compile group: 'org.springframework.kafka', name: 'spring-kafka', version: '2.0.0.RELEASE'
-    compile group: 'org.springframework.kafka', name: 'spring-kafka-test', version: '2.0.0.RELEASE'
-
-    // https://mvnrepository.com/artifact/org.freemarker/freemarker
-//    compile group: 'org.freemarker', name: 'freemarker', version: '2.3.23'
-
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-freemarker
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker', version: $springbootVersion
 
 
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.M3"
+    }
+}
 
 compileKotlin {
     kotlinOptions {
@@ -162,10 +143,9 @@ compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+
 }
 
 
-
-bootRun.dependsOn(buildClientDev)
-jar.dependsOn(buildClient)
 
