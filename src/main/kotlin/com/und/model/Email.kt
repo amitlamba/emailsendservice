@@ -9,7 +9,8 @@ data class Email(
         var ccEmailAddresses: Array<InternetAddress>? = null,
         var bccEmailAddresses: Array<InternetAddress>? = null,
         var replyToEmailAddresses: Array<InternetAddress>? = null,
-        var emailSubject: String,
-        var emailBody: String,
+        var emailSubject: String? = null,
+        var emailBody: String? = null,
+        var emailTemplateId: Long? = null,
         var userID: String? = null
 )

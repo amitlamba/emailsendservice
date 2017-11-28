@@ -1,16 +1,24 @@
 package com.und.service
 
+import com.amazonaws.auth.AWSCredentialsProvider
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder
 import com.amazonaws.services.simpleemail.model.Body
 import com.amazonaws.services.simpleemail.model.Content
 import com.amazonaws.services.simpleemail.model.Destination
 import com.amazonaws.services.simpleemail.model.SendEmailRequest
+import com.und.eventapi.repository.EventUserRepository
 import com.und.factory.EmailServiceProviderConnectionFactory
 import com.und.model.Email
 import com.und.model.EmailRead
+import com.und.model.EmailSESConfig
+import com.und.model.EmailSMTPConfig
 import com.und.model.mongo.EmailStatus
 import com.und.repository.EmailSentRepository
+import com.und.repository.EmailTemplateRepository
 import com.und.repository.ServiceProviderCredentialsRepository
 import com.und.utils.TenantProvider
 import com.und.utils.loggerFor
@@ -25,7 +33,7 @@ import com.amazonaws.services.simpleemail.model.Message as SESMessage
 @Service
 class EmailSendService {
     companion object {
-        protected val logger = loggerFor(javaClass)
+        protected val logger = loggerFor(EmailSendService::class.java)
     }
 
     @Autowired
@@ -37,12 +45,23 @@ class EmailSendService {
     @Autowired
     lateinit private var emailServiceProviderConnectionFactory: EmailServiceProviderConnectionFactory
 
+    @Autowired
+    private lateinit var eventUserRepository: EventUserRepository
+
+    @Autowired
+    private lateinit var emailTemplateRepository: EmailTemplateRepository
+
+    @Autowired
+    private lateinit var templateContentCreationService: TemplateContentCreationService
+
     fun sendEmailByAWSSDK(emailSESConfig: EmailSESConfig, email: Email) {
+        val credentialsProvider: AWSCredentialsProvider = AWSStaticCredentialsProvider(BasicAWSCredentials(emailSESConfig.awsAccessKeyId, emailSESConfig.awsSecretAccessKey))
         try {
             val client = AmazonSimpleEmailServiceClientBuilder.standard()
+                    .withCredentials(credentialsProvider)
                     // Replace US_WEST_2 with the AWS Region you're using for
                     // Amazon SES.
-                    .withRegion(Regions.EU_WEST_2).build()
+                    .withRegion(emailSESConfig.region).build()
             val request = SendEmailRequest()
             with(request) {
                 destination = Destination().withToAddresses(
@@ -113,19 +132,6 @@ class EmailSendService {
         return msg
     }
 
-    private fun createSMTPSession(emailSMTPConfig: EmailSMTPConfig): Session {
-        // Create a Properties object to contain connection configuration information.
-        val props = System.getProperties()
-        props.put("mail.transport.protocol", "smtp")
-        props.put("mail.smtp.port", emailSMTPConfig.PORT)
-        props.put("mail.smtp.starttls.enable", "true")
-        props.put("mail.smtp.auth", "true")
-
-        // Create a Session object to represent a mail session with the specified properties.
-        val session = Session.getDefaultInstance(props)
-        return session
-    }
-
     private fun saveMailInMongo(email: Email, emailStatus: EmailStatus) {
         var mongoEmail: com.und.model.mongo.Email = com.und.model.mongo.Email(
                 email.clientID,
@@ -134,8 +140,9 @@ class EmailSendService {
                 email.ccEmailAddresses,
                 email.bccEmailAddresses,
                 email.replyToEmailAddresses,
-                email.emailSubject,
-                email.emailBody,
+                email.emailSubject!!,
+                email.emailBody!!,
+                email.emailTemplateId,
                 email.userID,
                 emailStatus = emailStatus
         )
@@ -152,18 +159,14 @@ class EmailSendService {
             emailSentRepository.save(mongoEmail)
         }
     }
+
+    fun sendEmail(email: Email) {
+        if(email.emailTemplateId != null) {
+            val emailTemplate = emailTemplateRepository.findByIdAndClientID(email.emailTemplateId!!, email.clientID)
+            val eventUser = eventUserRepository.findById(email.userID)
+            email.emailSubject = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate.emailTemplateSubject, mapOf(Pair("user",eventUser)))
+            email.emailBody = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate.emailTemplateBody, mapOf(Pair("user",eventUser)))
+        }
+        sendEmailBySMTP(null, email)
+    }
 }
-
-data class EmailSESConfig(
-        var clientID: Long,
-        var CONFIGSET: String? = "CONFIGSET"
-)
-
-data class EmailSMTPConfig(
-        var clientID: Long,
-        var HOST: String,
-        var PORT: Int,
-        var SMTP_USERNAME: String,
-        var SMTP_PASSWORD: String,
-        var CONFIGSET: String? = null
-)

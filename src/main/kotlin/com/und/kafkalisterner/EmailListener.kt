@@ -1,13 +1,9 @@
 package com.und.kafkalisterner
 
-import com.und.model.Email
-import com.und.model.EmailRead
-import com.und.model.ServiceProviderType
-import com.und.model.Status
+import com.und.model.*
 import com.und.model.eventapi.ClickTrackEvent
 import com.und.repository.ServiceProviderCredentialsRepository
 import com.und.service.ClickTrackService
-import com.und.service.EmailSMTPConfig
 import com.und.service.EmailSendService
 import com.und.utils.loggerFor
 import org.springframework.beans.factory.annotation.Autowired
@@ -89,6 +85,6 @@ class EmailListener {
         val CONFIGSET = "ConfigSet"
         val HOST = "email-smtp.us-west-2.amazonaws.com"
         val PORT = 587
-        return EmailSMTPConfig(clientID, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
+        return EmailSMTPConfig(null, clientID, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
     }
 }

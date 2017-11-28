@@ -1,5 +1,9 @@
 package com.und.service
 
+import com.amazonaws.auth.AWSCredentialsProvider
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.regions.Regions
 import com.amazonaws.services.sns.AmazonSNS
 import com.amazonaws.services.sns.AmazonSNSClient
 import com.amazonaws.services.sns.AmazonSNSClientBuilder
@@ -13,7 +17,11 @@ class SmsSendService {
 
     fun sendSMSMessageBySNS(message: String, phoneNumber: String, smsAttributes: Map<String, MessageAttributeValue>? = null,
                             senderID: String, smsType: String, maxPrice: String) {
-        val snsClient = AmazonSNSClientBuilder.defaultClient()
+        val credentialsProvider: AWSCredentialsProvider = AWSStaticCredentialsProvider(BasicAWSCredentials("awsAccessKeyId", "awsSecretAccessKey"))
+        val snsClient = AmazonSNSClientBuilder.standard()
+                .withRegion(Regions.DEFAULT_REGION)
+                .withCredentials(credentialsProvider)
+                .build()
         val message = "My SMS message for Amit from UserNDot"
         val phoneNumber = "+918882774104"
         val smsAttributes = setSnsSmsAttributes(senderID, smsType, maxPrice)

@@ -16,6 +16,9 @@ spring:
           prefix: /WEB-INF/views/
           suffix: .jsp
 
+  cache:
+    type: redis
+
   datasource:
     url: jdbc:postgresql://localhost:5432/und
     username: postgres

@@ -1,6 +1,6 @@
 buildscript {
-    ext.kotlin_version = '1.1.51'
-    ext.spring_boot_version = '2.0.0.M5'
+    ext.kotlin_version = '1.1.60'
+    ext.spring_boot_version = '2.0.0.M3'
     repositories {
         mavenLocal()
         mavenCentral()
@@ -56,7 +56,7 @@ ext {
     taglibVersion = '1.1.2'
     javaxElVersion = '2.2.1-b04'
     bitWalkerUagentVersion = '1.20'
-    kotlinVersion = '1.1.51'
+    kotlinVersion = '1.1.60'
     springbootVersion = '2.0.0.M3'
     aspectjVersion = '1.8.7'
     jsonPathVersion = '2.1.0'
@@ -107,15 +107,19 @@ dependencies {
             "org.springframework.boot:spring-boot-actuator",
             "org.springframework.boot:spring-boot-starter-freemarker",
             "org.springframework.boot:spring-boot-devtools",
+            "org.springframework.boot:spring-boot-starter-cache",
             "org.aspectj:aspectjrt:$aspectjVersion",
             "org.aspectj:aspectjweaver:$aspectjVersion",
             "org.postgresql:postgresql:$pgDriverVersion",
             "io.jsonwebtoken:jjwt:$jjwtVersion",
             "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
             "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version",
+            "org.springframework.boot:spring-boot-starter-redis:$bootRedisVersion",
+            "org.springframework.data:spring-data-redis:$dataRedisVersion",
+            "redis.clients:jedis:$jedisVersion",
 
     )
-
+//    compile ("com.und:auth-client:0.3.0-SNAPSHOT")
 
     compile("org.springframework.kafka:spring-kafka")
     compile("org.springframework.kafka:spring-kafka-test")
@@ -123,14 +127,15 @@ dependencies {
     compile( "com.amazonaws:aws-java-sdk-ses:1.11.221")
     compile( "com.amazonaws:aws-java-sdk-sns:1.11.221")
     compile("log4j:log4j")
+    compile('org.springframework.cloud:spring-cloud-starter-feign')
 
-
+    compile('com.googlecode.json-simple:json-simple:1.1.1')
 
 }
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.M3"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.M2"
     }
 }
 

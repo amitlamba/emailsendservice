@@ -18,10 +18,11 @@ data class Email(
         var emailSubject: String,
         @Transient
         var emailBody: String,
+        var emailTemplateId: Long? = null,
         var userID: String? = null,
         @Id
         var id: String? = null, //Mongo Auto-generated Document id
-        var emialProviderMessageID: String? = null,
+        var emailProviderMessageID: String? = null,
         var emailServiceProvider: ServiceProvider? = null,
         var emailStatus: EmailStatus,
         var statusUpdates: MutableList<EmailStatusUpdate> = mutableListOf()

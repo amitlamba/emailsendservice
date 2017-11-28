@@ -1,9 +1,9 @@
 package com.und.factory
 
+import com.und.model.EmailSMTPConfig
 import com.und.model.ServiceProviderType
 import com.und.model.Status
 import com.und.repository.ServiceProviderCredentialsRepository
-import com.und.service.EmailSMTPConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import javax.mail.Session
@@ -23,7 +23,7 @@ class EmailServiceProviderConnectionFactory {
         synchronized(clientID) {
             if (!emailSMPTConfigs.containsKey(clientID)) {
                 val serviceProviderCreds = serviceProviderCredentialsRepository.findByClientIDAndServiceProviderTypeAndStatus(clientID, ServiceProviderType.EMAIL_SERVICE_PROVIDER, Status.ACTIVE).first()
-                var emailSMTPConfig = EmailSMTPConfig(clientID, serviceProviderCreds.url, serviceProviderCreds.port!!,
+                var emailSMTPConfig = EmailSMTPConfig(serviceProviderCreds.id, clientID, serviceProviderCreds.url, serviceProviderCreds.port!!,
                         serviceProviderCreds.username, serviceProviderCreds.password)
                 emailSMPTConfigs.put(clientID, emailSMTPConfig)
             }

@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils
 
 @Service
-class EmailTemplateCreationService {
+class TemplateContentCreationService {
 
     companion object {
-        val logger = loggerFor(EmailTemplateCreationService::class.java)
+        val logger = loggerFor(TemplateContentCreationService::class.java)
     }
 
     @Autowired

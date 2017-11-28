@@ -16,7 +16,7 @@ class ClickTrackService {
     fun markClickTrack(clickTrackEvent: ClickTrackEvent): ClickTrackEvent {
         val saved = clickTrackEventRepository.save(clickTrackEvent)
         val clickTrackEventId = saved.id
-        if (!clickTrackEvent.emailUid.isNullOrBlank()) {
+        if (clickTrackEvent.emailUid.isNotBlank()) {
             var email = emailSentRepository.findById(clickTrackEvent.emailUid).get()
             when (email.emailStatus) {
                 EmailStatus.SENT, EmailStatus.READ -> {

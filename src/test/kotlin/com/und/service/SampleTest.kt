@@ -1,15 +1,16 @@
 package com.und.service
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.und.model.Email
+import com.und.model.EmailSMTPConfig
+import com.und.model.fcm.FcmResponse
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import javax.mail.Message
-import javax.mail.Session
 import javax.mail.internet.InternetAddress
-import javax.mail.internet.MimeMessage
 
 //http://websystique.com/spring/spring-4-email-using-velocity-freemaker-template-library/
 
@@ -61,9 +62,24 @@ class SampleTest {
                 toEmailAddresses = arrayOf(InternetAddress(TO)),
                 emailSubject = SUBJECT,
                 emailBody = BODY)
-        val emailSMTPConfig = EmailSMTPConfig(1, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
+        val emailSMTPConfig = EmailSMTPConfig(null,1, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
 
         emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
+    }
+
+    @Autowired
+    private lateinit var cacheService: CacheService
+
+    @Test
+    fun testCaching() {
+        var lastString: String = "0"
+        for(i in 1..100) {
+            var currentString = cacheService.cachingFunction(1)
+            println("Current String: ${currentString}, Last String: ${lastString}")
+            println(Math.random().toString())
+            lastString = currentString
+            Thread.sleep(100)
+        }
     }
 
 }
