@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    config:
+      uri: http://nestros.com:8888
+      enabled: true
+      name: emailsendservice
+  application:
+    name: emailsendservice

@@ -1,10 +1,7 @@
 package com.und.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.und.model.Email
 import com.und.model.EmailSMTPConfig
-import com.und.model.fcm.FcmResponse
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired

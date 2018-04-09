@@ -2,10 +2,7 @@ package com.und.service
 
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.*
 
 /*
 url: 'https://fcm.googleapis.com/fcm/send',
@@ -26,7 +23,7 @@ url: 'https://fcm.googleapis.com/fcm/send',
 @FeignClient(name = "fcm",url = "https://fcm.googleapis.com/fcm")
 interface FcmFeignClient {
 
-    @RequestMapping(value = "/send", method = arrayOf(RequestMethod.POST), consumes = arrayOf("application/json"))
+    @PostMapping(value = ["/send"], consumes = ["application/json"])
     fun pushMessage(@RequestHeader("Authorization") authKeyValue: String,
                     @RequestBody requestBodyString: String): ResponseEntity<Any?>
 

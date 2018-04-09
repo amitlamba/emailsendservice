@@ -163,7 +163,7 @@ class EmailSendService {
     fun sendEmail(email: Email) {
         if(email.emailTemplateId != null) {
             val emailTemplate = emailTemplateRepository.findByIdAndClientID(email.emailTemplateId!!, email.clientID)
-            val eventUser = eventUserRepository.findById(email.userID)
+            val eventUser = eventUserRepository.findById(email.userID?:"0")
             email.emailSubject = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate.emailTemplateSubject, mapOf(Pair("user",eventUser)))
             email.emailBody = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate.emailTemplateBody, mapOf(Pair("user",eventUser)))
         }

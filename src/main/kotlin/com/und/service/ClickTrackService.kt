@@ -24,6 +24,8 @@ class ClickTrackService {
                     email.emailStatus = EmailStatus.CTA_PERFORMED
                     emailSentRepository.save(email)
                 }
+                EmailStatus.CTA_PERFORMED -> {}
+                EmailStatus.NOT_SENT -> {}
             }
         }
         return clickTrackEvent
