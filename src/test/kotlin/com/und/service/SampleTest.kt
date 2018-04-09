@@ -67,6 +67,18 @@ class SampleTest {
         emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
     }
 
+    @Test
+    fun testSesSMTPEmailSend() {
+        val email: Email = Email(clientID = 1,
+                fromEmailAddress = InternetAddress("amit@userndot..com", "Amit from Userndot"),
+                toEmailAddresses = arrayOf(InternetAddress("amitlamba4198@gmail.com")),
+                emailSubject = SUBJECT,
+                emailBody = BODY)
+        val emailSMTPConfig = EmailSMTPConfig(null, 1, "email-smtp.us-east-1.amazonaws.com", 465, "AKIAIS6IJSVKWL7VUIIQ", "AlEf0RBhmCMDcTuwDDrl9BonxawtKZrPC2b4Mtn4o2v4", CONFIGSET)
+
+        emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
+    }
+
     @Autowired
     private lateinit var cacheService: CacheService
 

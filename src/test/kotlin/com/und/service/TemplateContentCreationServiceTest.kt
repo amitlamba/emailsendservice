@@ -21,6 +21,7 @@ class TemplateContentCreationServiceTest {
         val name = "Sample Template"
         val converted = templateContentCreationService.getContentFromTemplate(name, content, getModelMap())
         println("converted: ${converted}")
+        assert(converted.contentEquals("Hello, Amit Lamba"))
     }
 
     fun getModelMap(): Map<String, Any> {

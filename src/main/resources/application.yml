@@ -1,45 +1,45 @@
-# config context path to "/" by setting an empty string
-server:
-  servlet:
-    context-path:
-
-# JACKSON
-spring:
-  thymeleaf:
-    cache: false
-  jackson:
-    serialization:
-      INDENT_OUTPUT: true
-
-  mvc:
-      view:
-          prefix: /WEB-INF/views/
-          suffix: .jsp
-
-  cache:
-    type: redis
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/und
-    username: postgres
-    password:  postgres
-
-security:
-  header:
-    token: Authorization
-    username: UserName
-  secret: mySecret
-  expiration: 604800
-  route:
-    authentication:
-      path: auth
-      refresh: refresh
-
-kafka:
-  ip: 127.0.0.1
-  port: 9092
-  topic:
-    event: Event-API
-    userevent: User-Event-API
-    email: Email
-    sms: SMS
+## config context path to "/" by setting an empty string
+#server:
+#  servlet:
+#    context-path:
+#
+## JACKSON
+#spring:
+#  thymeleaf:
+#    cache: false
+#  jackson:
+#    serialization:
+#      INDENT_OUTPUT: true
+#
+#  mvc:
+#      view:
+#          prefix: /WEB-INF/views/
+#          suffix: .jsp
+#
+#  cache:
+#    type: redis
+#
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/und
+#    username: postgres
+#    password:  postgres
+#
+#security:
+#  header:
+#    token: Authorization
+#    username: UserName
+#  secret: mySecret
+#  expiration: 604800
+#  route:
+#    authentication:
+#      path: auth
+#      refresh: refresh
+#
+#kafka:
+#  ip: 127.0.0.1
+#  port: 9092
+#  topic:
+#    event: Event-API
+#    userevent: User-Event-API
+#    email: Email
+#    sms: SMS
