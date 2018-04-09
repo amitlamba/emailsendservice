@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@ComponentScan(basePackages = arrayOf("com.und"))
+@ComponentScan(basePackages = ["com.und"])
 @RefreshScope
 @EnableEurekaClient
 @EnableFeignClients
