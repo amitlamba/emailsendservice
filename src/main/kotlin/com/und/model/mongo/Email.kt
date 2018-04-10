@@ -1,6 +1,6 @@
 package com.und.model.mongo
 
-import com.und.model.ServiceProvider
+import com.und.model.jpa.ServiceProvider
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
 import org.springframework.data.mongodb.core.mapping.Document

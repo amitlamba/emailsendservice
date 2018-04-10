@@ -1,8 +1,8 @@
 package com.und.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.und.model.fcm.FcmMessage
-import com.und.model.fcm.NotificationPayloadWeb
+import com.und.model.utils.fcm.FcmMessage
+import com.und.model.utils.fcm.NotificationPayloadWeb
 import feign.FeignException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity

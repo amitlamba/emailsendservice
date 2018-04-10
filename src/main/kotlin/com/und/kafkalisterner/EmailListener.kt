@@ -1,8 +1,8 @@
 package com.und.kafkalisterner
 
-import com.und.model.Email
-import com.und.model.EmailRead
-import com.und.model.eventapi.ClickTrackEvent
+import com.und.model.utils.Email
+import com.und.model.utils.EmailRead
+import com.und.model.mongo.ClickTrackEvent
 import com.und.service.ClickTrackService
 import com.und.service.EmailSendService
 import com.und.utils.loggerFor

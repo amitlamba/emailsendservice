@@ -1,4 +1,4 @@
-package com.und.model
+package com.und.model.utils
 
 data class EmailRead(
         val clientID: Long,

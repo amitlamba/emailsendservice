@@ -1,4 +1,4 @@
-package com.und.model.eventapi
+package com.und.model.mongo
 
 import com.und.eventapi.model.EventUser
 import com.und.eventapi.model.GeoDetails

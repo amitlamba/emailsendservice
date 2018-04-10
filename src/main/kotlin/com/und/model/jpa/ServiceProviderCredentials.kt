@@ -1,7 +1,7 @@
-package com.und.model
+package com.und.model.jpa
 
 import com.amazonaws.regions.Regions
-import java.util.*
+import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 
@@ -25,39 +25,21 @@ class ServiceProviderCredentials {
 
     @Column(name = "service_provider_type")
     @NotNull
-    @Enumerated(EnumType.STRING)
-    lateinit var serviceProviderType: ServiceProviderType
+    lateinit var serviceProviderType: String
 
     @Column(name = "service_provider")
     @NotNull
-    @Enumerated(EnumType.STRING)
-    lateinit var serviceProvider: ServiceProvider
+    lateinit var serviceProvider: String
 
-    @Column(name = "url")
-    lateinit var url: String
-
-    @Column(name = "port")
-    var port: Int? = null
-
-    @Column(name = "username")
-    lateinit var username: String
-
-    @Column(name = "password")
-    lateinit var password: String
-
-    @Column(name = "region")
-    @Enumerated(EnumType.STRING)
-    lateinit var region: Regions
-
+    //    @Transient
+// FIXME: This date should not be modified on subsequent changes
     @Column(name = "date_created")
-    @Temporal(TemporalType.TIMESTAMP)
     @NotNull
-    lateinit var dateCreated: Date
+    lateinit var dateCreated: LocalDateTime
 
     @Column(name = "date_modified")
-    @Temporal(TemporalType.TIMESTAMP)
     @NotNull
-    lateinit var dateModified: Date
+    lateinit var dateModified: LocalDateTime
 
     @Column(name = "status")
     @NotNull
@@ -66,7 +48,7 @@ class ServiceProviderCredentials {
 
     @Column(name = "credentials")
     @NotNull
-    lateinit var credentials: String
+    lateinit var credentialsMap: String
 }
 
 enum class ServiceProvider(val type: ServiceProviderType) {

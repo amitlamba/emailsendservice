@@ -1,4 +1,4 @@
-package com.und.model
+package com.und.model.utils
 
 import javax.mail.internet.InternetAddress
 

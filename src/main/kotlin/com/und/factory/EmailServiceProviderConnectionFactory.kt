@@ -1,9 +1,10 @@
 package com.und.factory
 
-import com.und.model.EmailSMTPConfig
-import com.und.model.ServiceProviderType
-import com.und.model.Status
+import com.und.model.jpa.EmailSMTPConfig
+import com.und.model.jpa.ServiceProviderType
+import com.und.model.jpa.Status
 import com.und.repository.ServiceProviderCredentialsRepository
+import com.und.service.ServiceProviderCredentialsService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import javax.mail.Session
@@ -15,6 +16,9 @@ class EmailServiceProviderConnectionFactory {
     @Autowired
     lateinit private var serviceProviderCredentialsRepository: ServiceProviderCredentialsRepository
 
+    @Autowired
+    lateinit var serviceProviderCredentialsService: ServiceProviderCredentialsService
+
     var emailSMPTConfigs: MutableMap<Long, EmailSMTPConfig> = mutableMapOf()
     var emailSMTPSessions: MutableMap<Long, Session> = mutableMapOf()
     var emailSMTPTransportConnections: MutableMap<Long, Transport> = mutableMapOf()
@@ -22,9 +26,10 @@ class EmailServiceProviderConnectionFactory {
     fun getEmailServiceProvider(clientID: Long): EmailSMTPConfig {
         synchronized(clientID) {
             if (!emailSMPTConfigs.containsKey(clientID)) {
-                val serviceProviderCreds = serviceProviderCredentialsRepository.findByClientIDAndServiceProviderTypeAndStatus(clientID, ServiceProviderType.EMAIL_SERVICE_PROVIDER, Status.ACTIVE).first()
-                var emailSMTPConfig = EmailSMTPConfig(serviceProviderCreds.id, clientID, serviceProviderCreds.url, serviceProviderCreds.port!!,
-                        serviceProviderCreds.username, serviceProviderCreds.password)
+                val serviceProviderCreds = serviceProviderCredentialsRepository.findByClientIDAndServiceProviderTypeAndStatus(clientID, "Email Service Provider", Status.ACTIVE).first()
+                val spCreds = serviceProviderCredentialsService.buildWebServiceProviderCredentials(serviceProviderCreds)
+                var emailSMTPConfig = EmailSMTPConfig(spCreds.id, clientID, spCreds.credentialsMap.get("url")!!, spCreds.credentialsMap.get("port")!!.toInt(),
+                        spCreds.credentialsMap.get("username")!!, spCreds.credentialsMap.get("password")!!)
                 emailSMPTConfigs.put(clientID, emailSMTPConfig)
             }
             return emailSMPTConfigs.get(clientID)!!
@@ -37,6 +42,8 @@ class EmailServiceProviderConnectionFactory {
                 var emailSMTPConfigVar: EmailSMTPConfig? = emailSMTPConfig
                 if(emailSMTPConfig == null) {
                     emailSMTPConfigVar = getEmailServiceProvider(clientID)
+                } else {
+                    emailSMPTConfigs.put(clientID, emailSMTPConfig)
                 }
                 val session = createSMTPSession(emailSMTPConfigVar!!)
                 emailSMTPSessions.put(clientID, session)
@@ -50,6 +57,7 @@ class EmailServiceProviderConnectionFactory {
             if (!emailSMTPTransportConnections.containsKey(clientID)) {
                 val transport = getSMTPSession(clientID).getTransport()
                 val esp = getEmailServiceProvider(clientID)
+                println("Email Service Provider:" + esp)
                 transport.connect(esp.HOST, esp.SMTP_USERNAME, esp.SMTP_PASSWORD)
                 emailSMTPTransportConnections.put(clientID, transport)
             }

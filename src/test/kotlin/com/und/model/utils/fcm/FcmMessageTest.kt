@@ -1,4 +1,4 @@
-package com.und.model.fcm
+package com.und.model.utils.fcm
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.junit.Test

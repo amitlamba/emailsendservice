@@ -1,6 +1,6 @@
 package com.und.service
 
-import com.und.model.eventapi.ClickTrackEvent
+import com.und.model.mongo.ClickTrackEvent
 import com.und.model.mongo.EmailStatus
 import com.und.model.mongo.EmailStatusUpdate
 import com.und.repository.ClickTrackEventRepository

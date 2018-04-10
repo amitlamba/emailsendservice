@@ -1,4 +1,4 @@
-package com.und.model
+package com.und.model.utils
 
 enum class EmailMessageType(val value: Short) {
     TRANSACTIONAL(1),

@@ -1,4 +1,4 @@
-package com.und.model.fcm
+package com.und.model.utils.fcm
 
 data class FcmResponse (
     val multicast_id: Long,

@@ -1,5 +1,6 @@
-package com.und.model
+package com.und.model.jpa
 
+import com.und.model.utils.EmailMessageType
 import javax.persistence.*
 //import javax.validation.constraints.Email
 import javax.validation.constraints.NotNull

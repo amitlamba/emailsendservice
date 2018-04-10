@@ -3,8 +3,6 @@ package com.und.service
 import com.amazonaws.auth.AWSCredentialsProvider
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.auth.profile.ProfileCredentialsProvider
-import com.amazonaws.regions.Regions
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder
 import com.amazonaws.services.simpleemail.model.Body
 import com.amazonaws.services.simpleemail.model.Content
@@ -12,10 +10,10 @@ import com.amazonaws.services.simpleemail.model.Destination
 import com.amazonaws.services.simpleemail.model.SendEmailRequest
 import com.und.eventapi.repository.EventUserRepository
 import com.und.factory.EmailServiceProviderConnectionFactory
-import com.und.model.Email
-import com.und.model.EmailRead
-import com.und.model.EmailSESConfig
-import com.und.model.EmailSMTPConfig
+import com.und.model.utils.Email
+import com.und.model.utils.EmailRead
+import com.und.model.jpa.EmailSESConfig
+import com.und.model.jpa.EmailSMTPConfig
 import com.und.model.mongo.EmailStatus
 import com.und.repository.EmailSentRepository
 import com.und.repository.EmailTemplateRepository
@@ -102,7 +100,7 @@ class EmailSendService {
             val msg = createMimeMessage(session, email, emailSMTPConfig!!)
             // Send the email.
             transport.sendMessage(msg, msg.getAllRecipients())
-            transport.sendMessage(msg, msg.getAllRecipients())
+//            transport.sendMessage(msg, msg.getAllRecipients())
             println("Email sent!")
         } catch (ex: Exception) {
             logger.error("The email was not sent.")

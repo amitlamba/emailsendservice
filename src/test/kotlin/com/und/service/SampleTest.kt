@@ -1,7 +1,7 @@
 package com.und.service
 
-import com.und.model.Email
-import com.und.model.EmailSMTPConfig
+import com.und.model.utils.Email
+import com.und.model.jpa.EmailSMTPConfig
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -59,7 +59,7 @@ class SampleTest {
                 toEmailAddresses = arrayOf(InternetAddress(TO)),
                 emailSubject = SUBJECT,
                 emailBody = BODY)
-        val emailSMTPConfig = EmailSMTPConfig(null,1, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
+        val emailSMTPConfig = EmailSMTPConfig(null, 1, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
 
         emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
     }
@@ -67,11 +67,11 @@ class SampleTest {
     @Test
     fun testSesSMTPEmailSend() {
         val email: Email = Email(clientID = 1,
-                fromEmailAddress = InternetAddress("amit@userndot..com", "Amit from Userndot"),
+                fromEmailAddress = InternetAddress("amit@userndot.com", "Amit from Userndot"),
                 toEmailAddresses = arrayOf(InternetAddress("amitlamba4198@gmail.com")),
                 emailSubject = SUBJECT,
                 emailBody = BODY)
-        val emailSMTPConfig = EmailSMTPConfig(null, 1, "email-smtp.us-east-1.amazonaws.com", 465, "AKIAIS6IJSVKWL7VUIIQ", "AlEf0RBhmCMDcTuwDDrl9BonxawtKZrPC2b4Mtn4o2v4", CONFIGSET)
+        val emailSMTPConfig = EmailSMTPConfig(null, 1, "email-smtp.us-east-1.amazonaws.com", 587, "AKIAIS6IJSVKWL7VUIIQ", "AlEf0RBhmCMDcTuwDDrl9BonxawtKZrPC2b4Mtn4o2v4", null)
 
         emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
     }
