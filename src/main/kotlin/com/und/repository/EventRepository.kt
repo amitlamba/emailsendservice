@@ -1,6 +1,6 @@
 package com.und.eventapi.repository
 
-import com.und.eventapi.model.Event
+import com.und.model.mongo.Event
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 

@@ -1,7 +1,6 @@
 package com.und.factory
 
 import com.und.model.jpa.EmailSMTPConfig
-import com.und.model.jpa.ServiceProviderType
 import com.und.model.jpa.Status
 import com.und.repository.ServiceProviderCredentialsRepository
 import com.und.service.ServiceProviderCredentialsService

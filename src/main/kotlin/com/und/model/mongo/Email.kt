@@ -1,6 +1,5 @@
 package com.und.model.mongo
 
-import com.und.model.jpa.ServiceProvider
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
 import org.springframework.data.mongodb.core.mapping.Document
@@ -23,7 +22,7 @@ data class Email(
         @Id
         var id: String? = null, //Mongo Auto-generated Document id
         var emailProviderMessageID: String? = null,
-        var emailServiceProvider: ServiceProvider? = null,
+        var emailServiceProvider: String? = null,
         var emailStatus: EmailStatus,
         var statusUpdates: MutableList<EmailStatusUpdate> = mutableListOf()
 )

@@ -1,11 +1,11 @@
 package com.und.model.mongo
 
-import com.und.eventapi.model.EventUser
 import com.und.eventapi.model.GeoDetails
 import com.und.eventapi.model.SystemDetails
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import java.util.HashMap
+import java.lang.System
+import java.util.*
 
 @Document(collection = "#{tenantProvider.getTenant()}_click_event")
 data class ClickTrackEvent(
