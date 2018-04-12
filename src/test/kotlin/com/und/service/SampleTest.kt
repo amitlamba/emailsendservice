@@ -16,12 +16,12 @@ import javax.mail.internet.InternetAddress
 class SampleTest {
     // Replace sender@example.com with your "From" address.
 // This address must be verified.
-    val FROM = "sender@example.com"
-    val FROMNAME = "Sender Name"
+    val FROM = "amit@userndot.com"
+    val FROMNAME = "Amit from Userndot"
 
     // Replace recipient@example.com with a "To" address. If your account
 // is still in the sandbox, this address must be verified.
-    val TO = "recipient@example.com"
+    val TO = "amitlamba4198@gmail.com"
 
     // Replace smtp_username with your Amazon SES SMTP user name.
     val SMTP_USERNAME = "smtp_username"
@@ -54,14 +54,14 @@ class SampleTest {
 
     @Test
     fun testEmailSend() {
-        val email: Email = Email(clientID = 1,
+        val email: Email = Email(clientID = 2,
                 fromEmailAddress = InternetAddress(FROM, FROMNAME),
                 toEmailAddresses = arrayOf(InternetAddress(TO)),
                 emailSubject = SUBJECT,
                 emailBody = BODY)
         val emailSMTPConfig = EmailSMTPConfig(null, 1, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
 
-        emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
+        emailSendService.sendEmailBySMTP(null, email)
     }
 
     @Test

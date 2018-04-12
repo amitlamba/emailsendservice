@@ -1,27 +1,50 @@
-package com.und.eventapi.model
+package com.und.model.mongo
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.data.annotation.Id
-
 import org.springframework.data.mongodb.core.mapping.Document
-import java.util.*
-
-/**
- * Created by shiv on 21/07/17.
- */
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.HashMap
 
 @Document(collection = "#{tenantProvider.getTenant()}_event")
-data class Event(
-        val name: String = "",
-        @Id
-        private var id: String? = null,
-        var clientId: String = "-1",
-        var instanceId: String? = null,
-        val eventUser: EventUser = EventUser(),
-        val geoDetails: GeoDetails = GeoDetails(),
-        val systemDetails: SystemDetails = SystemDetails(),
-        val localDateTime: Long = System.currentTimeMillis(),
-        val attributes: HashMap<String, Any> = hashMapOf(),
-        var userIdentified:Boolean = false
-)
+class Event(
+        @field: Id var id: String? = null,
+        val name: String,
+        val clientId: Int,
+        var lineItem: MutableList<LineItem> = mutableListOf(),
+        var attributes: HashMap<String, Any> = hashMapOf(),
+        var system: System = System(),
+        var creationTime: Long = LocalDateTime.now().atZone(ZoneId.of("UTC")).toEpochSecond()
+) {
+        var geoDetails = GeoDetails()
+        var deviceId : String = ""
+        var userIdentified :Boolean =  false
+        var userId : String? = null
+        var sessionId : String = ""
+}
 
+data class Coordinate(val latitude: Float, val longitude: Float)
+data class GeoLocation(val type: String = "Point", val coordinate: Coordinate)
+class GeoDetails {
+        var ip: String? = null
+        var geolocation: GeoLocation? = null
+}
+
+class SystemDetails(val name: String, val version: String)
+class System {
+        var os: SystemDetails? = null
+        var browser: SystemDetails? = null
+        var device: SystemDetails? = null
+        var application: SystemDetails? = null
+}
+
+
+class LineItem {
+        var price: Int = 0
+        var currency: String? = null
+        var product: String? = null
+        var categories: MutableList<String> = mutableListOf()
+        var tags: MutableList<String> = mutableListOf()
+        var quantity:Int=0
+        var properties: HashMap<String, Any> = hashMapOf()
+}

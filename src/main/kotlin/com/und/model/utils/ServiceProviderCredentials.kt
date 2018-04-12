@@ -16,30 +16,32 @@ class ServiceProviderCredentials {
     lateinit var dateModified: LocalDateTime
     lateinit var status: Status
     var credentialsMap: HashMap<String, String> = HashMap<String, String>()
+
+    fun getServiceProvider(): Any? {
+        when(this.serviceProviderType) {
+            "Email Service Provider" -> {
+                when(this.serviceProvider) {
+                    "SMTP" -> return EmailSMTPConfig.build(this)
+                    "AWS - Simple Email Service (API)" -> return EmailSMTPConfig.build(this)
+                    "AWS - Simple Email Service (SMTP)" -> return EmailSESConfig.build(this)
+                }
+            }
+            "SMS Service Provider" -> {
+                when(this.serviceProvider) {
+                    "AWS - Simple Notification Service" -> return SmsSNSConfig.build(this)
+                }
+            }
+            "Notification Service Provider" -> {
+                when(this.serviceProvider) {
+                    "Google - FCM" -> return GoogleFCMConfig.build(this)
+                    "Google - GCM" -> return GoogleFCMConfig.build(this)
+                }
+            }
+        }
+        return null
+    }
 }
 
-class ServiceProviderCreds {
-    lateinit var serviceProviders: Map<String, ServiceProviderTypes>
-}
-
-class ServiceProviderTypes {
-    lateinit var name: String
-    lateinit var displayName: String
-    lateinit var providers: Map<String, ServiceProvider>
-}
-
-class ServiceProvider {
-    lateinit var name: String
-    lateinit var displayName: String
-    lateinit var fields: Array<Field>
-}
-
-class Field {
-    lateinit var fieldName: String
-    lateinit var fieldDisplayName: String
-    var required: Boolean = false
-    lateinit var fieldType: String
-}
 
 data class EmailSESConfig(
         var serviceProviderCredentialsId: Long?,
@@ -48,7 +50,17 @@ data class EmailSESConfig(
         val region: Regions,
         val awsAccessKeyId: String,
         val awsSecretAccessKey: String
-)
+) {
+    companion object {
+        fun build(serviceProviderCredentials: ServiceProviderCredentials): EmailSESConfig {
+            val host = serviceProviderCredentials.credentialsMap.get("url")
+            val port = serviceProviderCredentials.credentialsMap.get("port")
+            val username = serviceProviderCredentials.credentialsMap.get("username")
+            val password = serviceProviderCredentials.credentialsMap.get("password")
+            return null!!
+        }
+    }
+}
 
 data class EmailSMTPConfig(
         var serviceProviderCredentialsId: Long?,
@@ -83,14 +95,30 @@ data class SmsSNSConfig(
         val region: Regions,
         val awsAccessKeyId: String,
         val awsSecretAccessKey: String
-)
+) {
+    companion object {
+        fun build(serviceProviderCredentials: ServiceProviderCredentials): SmsSNSConfig {
+            val host = serviceProviderCredentials.credentialsMap.get("url")
+            val port = serviceProviderCredentials.credentialsMap.get("port")
+            val username = serviceProviderCredentials.credentialsMap.get("username")
+            val password = serviceProviderCredentials.credentialsMap.get("password")
+            return null!!
+        }
+    }
+}
 
 data class GoogleFCMConfig(
         var serviceProviderCredentialsId: Long?,
         val clientID: Long,
         val serverKey: String
-)
-
-data class SP(val spType: String, val sp: String)
-
-val mapSPtoSPClass: Map<SP, Any> = mapOf(SP("Email Service Provider", "SMTP") to EmailSMTPConfig.javaClass)
+) {
+    companion object {
+        fun build(serviceProviderCredentials: ServiceProviderCredentials): GoogleFCMConfig {
+            val host = serviceProviderCredentials.credentialsMap.get("url")
+            val port = serviceProviderCredentials.credentialsMap.get("port")
+            val username = serviceProviderCredentials.credentialsMap.get("username")
+            val password = serviceProviderCredentials.credentialsMap.get("password")
+            return null!!
+        }
+    }
+}

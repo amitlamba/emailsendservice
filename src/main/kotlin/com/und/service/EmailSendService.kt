@@ -14,6 +14,7 @@ import com.und.model.utils.Email
 import com.und.model.utils.EmailRead
 import com.und.model.jpa.EmailSESConfig
 import com.und.model.jpa.EmailSMTPConfig
+import com.und.model.jpa.EmailTemplate
 import com.und.model.mongo.EmailStatus
 import com.und.repository.EmailSentRepository
 import com.und.repository.EmailTemplateRepository
@@ -97,7 +98,7 @@ class EmailSendService {
             logger.debug("Sending...")
 
 
-            val msg = createMimeMessage(session, email, emailSMTPConfig!!)
+            val msg = createMimeMessage(session, email, emailServiceProviderConnectionFactory.getEmailServiceProvider(email.clientID))
             // Send the email.
             transport.sendMessage(msg, msg.getAllRecipients())
 //            transport.sendMessage(msg, msg.getAllRecipients())
@@ -141,7 +142,7 @@ class EmailSendService {
                 email.emailSubject!!,
                 email.emailBody!!,
                 email.emailTemplateId,
-                email.userID,
+                email.eventUser?.id,
                 emailStatus = emailStatus
         )
         TenantProvider().setTenant(email.clientID.toString())
@@ -159,11 +160,15 @@ class EmailSendService {
     }
 
     fun sendEmail(email: Email) {
-        if(email.emailTemplateId != null) {
-            val emailTemplate = emailTemplateRepository.findByIdAndClientID(email.emailTemplateId!!, email.clientID)
-            val eventUser = eventUserRepository.findById(email.userID?:"0")
-            email.emailSubject = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate.emailTemplateSubject, mapOf(Pair("user",eventUser)))
-            email.emailBody = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate.emailTemplateBody, mapOf(Pair("user",eventUser)))
+        var emailTemplate: EmailTemplate? = null
+        if (email.emailTemplateId != null) {
+            emailTemplate = emailTemplateRepository.findByIdAndClientID(email.emailTemplateId!!, email.clientID)
+            email.emailSubject = email.emailSubject ?: emailTemplate.emailTemplateSubject
+            email.emailBody = email.emailBody ?: emailTemplate.emailTemplateBody
+        }
+        if (email.eventUser != null) {
+            email.emailSubject = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate!!.emailTemplateSubject, mapOf(Pair("user", email.eventUser!!)))
+            email.emailBody = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate.emailTemplateBody, mapOf(Pair("user", email.eventUser!!)))
         }
         sendEmailBySMTP(null, email)
     }

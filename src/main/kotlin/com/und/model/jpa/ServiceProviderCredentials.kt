@@ -51,28 +51,6 @@ class ServiceProviderCredentials {
     lateinit var credentialsMap: String
 }
 
-enum class ServiceProvider(val type: ServiceProviderType) {
-    SMTP(ServiceProviderType.EMAIL_SERVICE_PROVIDER),
-    AWS_SES(ServiceProviderType.EMAIL_SERVICE_PROVIDER),
-    AWS_SNS(ServiceProviderType.SMS_SERVICE_PROVIDER),
-    GOOGLE_FCM(ServiceProviderType.NOTIFICATIONS_SERVICE_PROVIDER);
-
-    companion object {
-        private val map:Map<ServiceProviderType, List<ServiceProvider>> = ServiceProvider.values().groupBy(ServiceProvider::type)
-        fun getProviders(type: ServiceProviderType) = map[type]
-    }
-}
-
-enum class ServiceProviderType(val value: Short) {
-    EMAIL_SERVICE_PROVIDER(1),
-    SMS_SERVICE_PROVIDER(2),
-    NOTIFICATIONS_SERVICE_PROVIDER(3);
-
-    companion object {
-        private val map = ServiceProviderType.values().associateBy(ServiceProviderType::value)
-        fun fromValue(type: Short) = map[type]
-    }
-}
 
 data class EmailSESConfig(
         var serviceProviderCredentialsId: Long?,

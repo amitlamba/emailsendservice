@@ -27,9 +27,9 @@ class EmailServiceProviderConnectionFactory {
         synchronized(clientID) {
             if (!emailSMPTConfigs.containsKey(clientID)) {
                 val serviceProviderCreds = serviceProviderCredentialsRepository.findByClientIDAndServiceProviderTypeAndStatus(clientID, "Email Service Provider", Status.ACTIVE).first()
-                val spCreds = serviceProviderCredentialsService.buildWebServiceProviderCredentials(serviceProviderCreds)
-                var emailSMTPConfig = EmailSMTPConfig(spCreds.id, clientID, spCreds.credentialsMap.get("url")!!, spCreds.credentialsMap.get("port")!!.toInt(),
-                        spCreds.credentialsMap.get("username")!!, spCreds.credentialsMap.get("password")!!)
+                val wspCreds = serviceProviderCredentialsService.buildWebServiceProviderCredentials(serviceProviderCreds)
+                var emailSMTPConfig = EmailSMTPConfig(wspCreds.id, clientID, wspCreds.credentialsMap.get("url")!!, wspCreds.credentialsMap.get("port")!!.toInt(),
+                        wspCreds.credentialsMap.get("username")!!, wspCreds.credentialsMap.get("password")!!)
                 emailSMPTConfigs.put(clientID, emailSMTPConfig)
             }
             return emailSMPTConfigs.get(clientID)!!

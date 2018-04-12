@@ -30,6 +30,11 @@ class EmailListener {
         emailService.sendEmailBySMTP(null, email)
     }
 
+    @StreamListener("clientEmail")
+    fun sendClientEmail(email: Email) {
+        email.clientID = 1
+        emailService.sendEmailBySMTP(null, email)
+    }
 
     @StreamListener("EmailReadEvent")
     fun listenEmailReadTopicAllPartitions(emailRead: EmailRead) {

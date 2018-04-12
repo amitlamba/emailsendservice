@@ -1,5 +1,6 @@
 package com.und.model.utils
 
+import com.und.model.mongo.EventUser
 import javax.mail.internet.InternetAddress
 
 data class Email(
@@ -12,5 +13,5 @@ data class Email(
         var emailSubject: String? = null,
         var emailBody: String? = null,
         var emailTemplateId: Long? = null,
-        var userID: String? = null
+        var eventUser: EventUser? = null
 )
