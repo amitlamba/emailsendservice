@@ -60,5 +60,5 @@ class CampaignService {
     }
 
     fun toKafka(email: Email): Boolean =
-            eventStream.outputEmailEvent().send(MessageBuilder.withPayload(email).build())
+            eventStream.emailEventSend().send(MessageBuilder.withPayload(email).build())
 }

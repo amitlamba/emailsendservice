@@ -17,8 +17,8 @@ class CampaignListener {
         val logger = loggerFor(CampaignListener::class.java)
     }
 
-    @StreamListener("emailEvent")
-    fun executeCampaign(campaignMap: Map<String,Long>) {
-        campaignService.executeCampaign(campaignMap["campaignMap"]!!, campaignMap["clientId"]!!)
-    }
+//    @StreamListener("campaignTrigger")
+//    fun executeCampaign(campaignMap: Map<String,Long>) {
+//        campaignService.executeCampaign(campaignMap["campaignMap"]!!, campaignMap["clientId"]!!)
+//    }
 }

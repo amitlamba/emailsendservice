@@ -18,21 +18,21 @@ class ServiceProviderCredentials {
     var credentialsMap: HashMap<String, String> = HashMap<String, String>()
 
     fun getServiceProvider(): Any? {
-        when(this.serviceProviderType) {
+        when (this.serviceProviderType) {
             "Email Service Provider" -> {
-                when(this.serviceProvider) {
+                when (this.serviceProvider) {
                     "SMTP" -> return EmailSMTPConfig.build(this)
                     "AWS - Simple Email Service (API)" -> return EmailSMTPConfig.build(this)
                     "AWS - Simple Email Service (SMTP)" -> return EmailSESConfig.build(this)
                 }
             }
             "SMS Service Provider" -> {
-                when(this.serviceProvider) {
+                when (this.serviceProvider) {
                     "AWS - Simple Notification Service" -> return SmsSNSConfig.build(this)
                 }
             }
             "Notification Service Provider" -> {
-                when(this.serviceProvider) {
+                when (this.serviceProvider) {
                     "Google - FCM" -> return GoogleFCMConfig.build(this)
                     "Google - GCM" -> return GoogleFCMConfig.build(this)
                 }
@@ -46,18 +46,22 @@ class ServiceProviderCredentials {
 data class EmailSESConfig(
         var serviceProviderCredentialsId: Long?,
         val clientID: Long,
-        val CONFIGSET: String? = "CONFIGSET",
         val region: Regions,
         val awsAccessKeyId: String,
         val awsSecretAccessKey: String
 ) {
     companion object {
         fun build(serviceProviderCredentials: ServiceProviderCredentials): EmailSESConfig {
-            val host = serviceProviderCredentials.credentialsMap.get("url")
-            val port = serviceProviderCredentials.credentialsMap.get("port")
-            val username = serviceProviderCredentials.credentialsMap.get("username")
-            val password = serviceProviderCredentials.credentialsMap.get("password")
-            return null!!
+            val region = serviceProviderCredentials.credentialsMap["AWS_REGION"]
+            val accessKeyId = serviceProviderCredentials.credentialsMap.get("AWS_ACCESS_KEY_ID")
+            val secretAccessKey = serviceProviderCredentials.credentialsMap.get("AWS_SECRET_ACCESS_KEY")
+            return EmailSESConfig(
+                    serviceProviderCredentials.id,
+                    serviceProviderCredentials.clientID!!,
+                    Regions.fromName(region),
+                    accessKeyId!!,
+                    secretAccessKey!!
+            )
         }
     }
 }

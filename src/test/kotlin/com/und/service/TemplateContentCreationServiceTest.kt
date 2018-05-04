@@ -1,6 +1,7 @@
 package com.und.service
 
-import com.und.eventapi.model.EventUser
+import com.und.model.mongo.EventUser
+import com.und.model.mongo.Identity
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +27,7 @@ class TemplateContentCreationServiceTest {
 
     fun getModelMap(): Map<String, Any> {
         var map: MutableMap<String, Any> = mutableMapOf()
-        map.put("user",EventUser(firstname = "Amit", lastname = "Lamba"))
+        map.put("user",EventUser())
         println("map: ${map}")
         return map
     }

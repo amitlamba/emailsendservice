@@ -33,9 +33,9 @@ data class EmailStatusUpdate (
         val clickTrackEventId: String? = null
 )
 
-enum class EmailStatus {
-    NOT_SENT,
-    SENT,
-    READ,
-    CTA_PERFORMED
+enum class EmailStatus(val order: Int) {
+    NOT_SENT(1),
+    SENT(2),
+    READ(3),
+    CTA_PERFORMED(4);
 }

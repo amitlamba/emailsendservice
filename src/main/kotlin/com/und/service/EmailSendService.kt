@@ -10,12 +10,11 @@ import com.amazonaws.services.simpleemail.model.Destination
 import com.amazonaws.services.simpleemail.model.SendEmailRequest
 import com.und.eventapi.repository.EventUserRepository
 import com.und.factory.EmailServiceProviderConnectionFactory
-import com.und.model.utils.Email
-import com.und.model.utils.EmailRead
-import com.und.model.jpa.EmailSESConfig
-import com.und.model.jpa.EmailSMTPConfig
 import com.und.model.jpa.EmailTemplate
+import com.und.model.jpa.Status
 import com.und.model.mongo.EmailStatus
+import com.und.model.mongo.EmailStatusUpdate
+import com.und.model.utils.*
 import com.und.repository.EmailSentRepository
 import com.und.repository.EmailTemplateRepository
 import com.und.repository.ServiceProviderCredentialsRepository
@@ -23,6 +22,7 @@ import com.und.utils.TenantProvider
 import com.und.utils.loggerFor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.*
 import javax.mail.Message
 import javax.mail.Session
 import javax.mail.internet.MimeMessage
@@ -39,6 +39,9 @@ class EmailSendService {
     lateinit private var serviceProviderCredentialsRepository: ServiceProviderCredentialsRepository
 
     @Autowired
+    lateinit private var serviceProviderCredentialsService: ServiceProviderCredentialsService
+
+    @Autowired
     lateinit private var emailSentRepository: EmailSentRepository
 
     @Autowired
@@ -52,6 +55,8 @@ class EmailSendService {
 
     @Autowired
     private lateinit var templateContentCreationService: TemplateContentCreationService
+
+    private var wspCredsMap: MutableMap<Long, ServiceProviderCredentials> = mutableMapOf()
 
     fun sendEmailByAWSSDK(emailSESConfig: EmailSESConfig, email: Email) {
         val credentialsProvider: AWSCredentialsProvider = AWSStaticCredentialsProvider(BasicAWSCredentials(emailSESConfig.awsAccessKeyId, emailSESConfig.awsSecretAccessKey))
@@ -76,7 +81,7 @@ class EmailSendService {
 
                 source = email.fromEmailAddress.address
 
-                configurationSetName = emailSESConfig.CONFIGSET
+//                configurationSetName = emailSESConfig.CONFIGSET
             }
             client.sendEmail(request)
             logger.debug("Email sent!")
@@ -96,7 +101,7 @@ class EmailSendService {
         // Send the message.
         try {
             logger.debug("Sending...")
-
+            val mongoEmailId = this.saveMailInMongo(email, com.und.model.mongo.EmailStatus.NOT_SENT)
 
             val msg = createMimeMessage(session, email, emailServiceProviderConnectionFactory.getEmailServiceProvider(email.clientID))
             // Send the email.
@@ -131,7 +136,7 @@ class EmailSendService {
         return msg
     }
 
-    private fun saveMailInMongo(email: Email, emailStatus: EmailStatus) {
+    private fun saveMailInMongo(email: Email, emailStatus: EmailStatus): String? {
         var mongoEmail: com.und.model.mongo.Email = com.und.model.mongo.Email(
                 email.clientID,
                 email.fromEmailAddress,
@@ -146,15 +151,16 @@ class EmailSendService {
                 emailStatus = emailStatus
         )
         TenantProvider().setTenant(email.clientID.toString())
-        emailSentRepository.save(mongoEmail)
+        val s = emailSentRepository.save(mongoEmail)
+        return s.id
     }
 
-    fun markEmailRead(emailRead: EmailRead) {
-        val clientID = emailRead.clientID
-        TenantProvider().setTenant(clientID.toString())
-        var mongoEmail: com.und.model.mongo.Email = emailSentRepository.findById(emailRead.emailUid).get()
-        if (mongoEmail.emailStatus == EmailStatus.SENT) {
+    fun updateEmailStatus(mongoEmailId: String, emailStatus: EmailStatus, clientId: Long, clickTrackEventId: String? = null) {
+        TenantProvider().setTenant(clientId.toString())
+        var mongoEmail: com.und.model.mongo.Email = emailSentRepository.findById(mongoEmailId).get()
+        if (mongoEmail.emailStatus.order < emailStatus.order ) {
             mongoEmail.emailStatus = EmailStatus.READ
+            mongoEmail.statusUpdates.add(EmailStatusUpdate(Date(), emailStatus, clickTrackEventId))
             emailSentRepository.save(mongoEmail)
         }
     }
@@ -170,6 +176,32 @@ class EmailSendService {
             email.emailSubject = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate!!.emailTemplateSubject, mapOf(Pair("user", email.eventUser!!)))
             email.emailBody = templateContentCreationService.getContentFromTemplate(email.emailTemplateId.toString(), emailTemplate.emailTemplateBody, mapOf(Pair("user", email.eventUser!!)))
         }
-        sendEmailBySMTP(null, email)
+        getCredentialsAndSendEmail(email)
+    }
+
+    private fun getCredentialsAndSendEmail(email: Email) {
+        synchronized(email.clientID) {
+            //TODO: This code can be cached in Redis
+            if(!wspCredsMap.containsKey(email.clientID)) {
+                val serviceProviderCreds = serviceProviderCredentialsRepository.findByClientIDAndServiceProviderTypeAndStatus(email.clientID, "Email Service Provider", Status.ACTIVE).first()
+                val wspCreds = serviceProviderCredentialsService.buildWebServiceProviderCredentials(serviceProviderCreds)
+                wspCredsMap.put(email.clientID, wspCreds)
+            }
+        }
+        val wspCreds = wspCredsMap[email.clientID]!!
+        when (wspCreds.serviceProvider) {
+            "SMTP" -> {
+                val emailSMTPConfig = EmailSMTPConfig.build(wspCreds)
+                sendEmailBySMTP(emailSMTPConfig, email)
+            }
+            "AWS - Simple Email Service (API)" -> {
+                val emailSESConfig = EmailSESConfig.build(wspCreds)
+                sendEmailByAWSSDK(emailSESConfig, email)
+            }
+            "AWS - Simple Email Service (SMTP)" -> {
+                val emailSMTPConfig = com.und.model.utils.EmailSMTPConfig.build(wspCreds)
+                sendEmailBySMTP(emailSMTPConfig, email)
+            }
+        }
     }
 }

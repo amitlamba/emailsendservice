@@ -1,21 +1,20 @@
 package com.und.service
 
+import com.und.config.EventStream
 import com.und.model.utils.Email
-import com.und.model.utils.EmailSMTPConfig
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.cloud.stream.annotation.EnableBinding
+import org.springframework.messaging.support.MessageBuilder
 import org.springframework.test.context.junit4.SpringRunner
 import javax.mail.internet.InternetAddress
 
-//http://websystique.com/spring/spring-4-email-using-velocity-freemaker-template-library/
-
 @RunWith(SpringRunner::class)
 @SpringBootTest
-class SampleTest {
-    // Replace sender@example.com with your "From" address.
-// This address must be verified.
+class KafkaProducerTest {
+
     val FROM = "amit@userndot.com"
     val FROMNAME = "Amit from Userndot"
 
@@ -50,45 +49,15 @@ class SampleTest {
             System.getProperty("line.separator"))
 
     @Autowired
-    private lateinit var emailSendService: EmailSendService
+    private lateinit var eventStream: EventStream
 
     @Test
-    fun testEmailSend() {
+    fun toKafkaEmail() {
         val email: Email = Email(clientID = 2,
                 fromEmailAddress = InternetAddress(FROM, FROMNAME),
                 toEmailAddresses = arrayOf(InternetAddress(TO)),
                 emailSubject = SUBJECT,
                 emailBody = BODY)
-        val emailSMTPConfig = EmailSMTPConfig(null, 1, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
-
-        emailSendService.sendEmailBySMTP(null, email)
+        eventStream.emailEventSend().send(MessageBuilder.withPayload(email).build())
     }
-
-    @Test
-    fun testSesSMTPEmailSend() {
-        val email: Email = Email(clientID = 1,
-                fromEmailAddress = InternetAddress("amit@userndot.com", "Amit from Userndot"),
-                toEmailAddresses = arrayOf(InternetAddress("amitlamba4198@gmail.com")),
-                emailSubject = SUBJECT,
-                emailBody = BODY)
-        val emailSMTPConfig = EmailSMTPConfig(null, 1, "email-smtp.us-east-1.amazonaws.com", 587, "AKIAIS6IJSVKWL7VUIIQ", "AlEf0RBhmCMDcTuwDDrl9BonxawtKZrPC2b4Mtn4o2v4", null)
-
-        emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
-    }
-
-    @Autowired
-    private lateinit var cacheService: CacheService
-
-    @Test
-    fun testCaching() {
-        var lastString: String = "0"
-        for(i in 1..100) {
-            var currentString = cacheService.cachingFunction(1)
-            println("Current String: ${currentString}, Last String: ${lastString}")
-            println(Math.random().toString())
-            lastString = currentString
-            Thread.sleep(100)
-        }
-    }
-
 }

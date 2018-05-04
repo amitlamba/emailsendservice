@@ -4,6 +4,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.gson.GsonBuilder
 import com.und.model.jpa.*
+import com.und.model.utils.EmailSESConfig
+import com.und.model.utils.EmailSMTPConfig
+import com.und.model.utils.GoogleFCMConfig
+import com.und.model.utils.SmsSNSConfig
 import com.und.repository.ServiceProviderCredentialsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

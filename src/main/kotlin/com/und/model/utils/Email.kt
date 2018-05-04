@@ -1,5 +1,6 @@
 package com.und.model.utils
 
+import com.und.model.mongo.EmailStatus
 import com.und.model.mongo.EventUser
 import javax.mail.internet.InternetAddress
 
@@ -14,4 +15,11 @@ data class Email(
         var emailBody: String? = null,
         var emailTemplateId: Long? = null,
         var eventUser: EventUser? = null
+)
+
+data class EmailUpdate(
+        var clientID: Long,
+        var mongoEmailId: String,
+        val emailStatus: EmailStatus,
+        val eventId: String? = null
 )

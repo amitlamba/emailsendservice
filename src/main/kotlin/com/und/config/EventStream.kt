@@ -11,13 +11,19 @@ interface EventStream {
     @Input("emailEvent")
     fun emailEventSend(): SubscribableChannel
 
-    @Input("EmailReadEvent")
-    fun EmailReadEvent(): SubscribableChannel
+//    @Input("campaignTrigger")
+//    fun campaignTriggerSend(): SubscribableChannel
+
+    @Input("clientEmail")
+    fun clientEmailSend(): SubscribableChannel
+
+    @Input("EmailUpdate")
+    fun emailUpdateEvent(): SubscribableChannel
 
     @Input("clickTrackEvent")
     fun clickTrackEvent(): SubscribableChannel
 
 
-    @Output("emailEvent")
-    fun outputEmailEvent(): MessageChannel
+//    @Output("emailEvent")
+//    fun outputEmailEvent(): MessageChannel
 }

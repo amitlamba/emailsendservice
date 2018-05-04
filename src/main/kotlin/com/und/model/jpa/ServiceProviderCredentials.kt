@@ -51,36 +51,3 @@ class ServiceProviderCredentials {
     lateinit var credentialsMap: String
 }
 
-
-data class EmailSESConfig(
-        var serviceProviderCredentialsId: Long?,
-        val clientID: Long,
-        val CONFIGSET: String? = "CONFIGSET",
-        val region: Regions,
-        val awsAccessKeyId: String,
-        val awsSecretAccessKey: String
-)
-
-data class EmailSMTPConfig(
-        var serviceProviderCredentialsId: Long?,
-        var clientID: Long,
-        var HOST: String,
-        var PORT: Int,
-        var SMTP_USERNAME: String,
-        var SMTP_PASSWORD: String,
-        var CONFIGSET: String? = null
-)
-
-data class SmsSNSConfig(
-        var serviceProviderCredentialsId: Long?,
-        val clientID: Long,
-        val region: Regions,
-        val awsAccessKeyId: String,
-        val awsSecretAccessKey: String
-)
-
-data class GoogleFCMConfig(
-        var serviceProviderCredentialsId: Long?,
-        val clientID: Long,
-        val serverKey: String
-)

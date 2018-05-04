@@ -1,7 +1,7 @@
 package com.und.factory
 
-import com.und.model.jpa.EmailSMTPConfig
 import com.und.model.jpa.Status
+import com.und.model.utils.EmailSMTPConfig
 import com.und.repository.ServiceProviderCredentialsRepository
 import com.und.service.ServiceProviderCredentialsService
 import org.springframework.beans.factory.annotation.Autowired
