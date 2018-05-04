@@ -3,6 +3,8 @@ package com.und.model.jpa
 import com.und.model.utils.DidEvents
 import com.und.model.utils.Geography
 import com.und.model.utils.GlobalFilter
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotNull
@@ -33,9 +35,13 @@ class Segment {
     @NotNull
     var type: String = ""
 
+    @field:CreationTimestamp
     @Column(name = "date_created")
-    @NotNull
-    var creationDate: LocalDateTime = LocalDateTime.now()
+    lateinit var dateCreated: LocalDateTime
+
+    @field:UpdateTimestamp
+    @Column(name = "date_modified")
+    lateinit var dateModified: LocalDateTime
 
     @Column(name = "conversion_event")
     @NotNull

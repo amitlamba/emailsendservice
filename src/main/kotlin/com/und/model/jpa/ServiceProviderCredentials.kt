@@ -1,6 +1,8 @@
 package com.und.model.jpa
 
 import com.amazonaws.regions.Regions
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotNull
@@ -31,14 +33,12 @@ class ServiceProviderCredentials {
     @NotNull
     lateinit var serviceProvider: String
 
-    //    @Transient
-// FIXME: This date should not be modified on subsequent changes
+    @field:CreationTimestamp
     @Column(name = "date_created")
-    @NotNull
     lateinit var dateCreated: LocalDateTime
 
+    @field:UpdateTimestamp
     @Column(name = "date_modified")
-    @NotNull
     lateinit var dateModified: LocalDateTime
 
     @Column(name = "status")
