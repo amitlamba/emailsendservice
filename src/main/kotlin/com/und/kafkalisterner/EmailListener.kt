@@ -24,18 +24,18 @@ class EmailListener {
     }
 
 
-    @StreamListener("emailEvent")
+    @StreamListener("clickTrackEventReceive")
     fun sendEmail(email: Email) {
         emailService.sendEmail(email)
     }
 
-    @StreamListener("clientEmail")
+    @StreamListener("clientEmailReceive")
     fun sendClientEmail(email: Email) {
         email.clientID = 1
         emailService.sendEmailBySMTP(null, email)
     }
 
-    @StreamListener("EmailUpdate")
+    @StreamListener("EmailUpdateReceive")
     fun listenEmailUpdate(emailUpdate: EmailUpdate) {
         try {
             emailService.updateEmailStatus(emailUpdate.mongoEmailId, emailUpdate.emailStatus, emailUpdate.clientID, emailUpdate.eventId)

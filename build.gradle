@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.30'
+        kotlinVersion = '1.2.41'
         springBootVersion = '2.0.0.RELEASE'
     }
     repositories {
@@ -65,7 +65,7 @@ tasks.withType(FindBugs) {
 
 ext {
     swaggerVersion = '2.7.0'
-    springCloudVersion = 'Finchley.M8'
+    springCloudVersion = 'Finchley.RC1'
     bootRedisVersion = '1.4.7.RELEASE'
     dataRedisVersion = '2.0.0.RELEASE'
     jedisVersion = '2.9.0'

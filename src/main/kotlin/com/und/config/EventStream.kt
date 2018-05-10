@@ -8,22 +8,17 @@ import org.springframework.messaging.SubscribableChannel
 
 interface EventStream {
 
-    @Input("emailEvent")
-    fun emailEventSend(): SubscribableChannel
+    @Output("emailEventSend")
+    fun emailEventSend(): MessageChannel
 
-//    @Input("campaignTrigger")
-//    fun campaignTriggerSend(): SubscribableChannel
 
-    @Input("clientEmail")
+    @Input("clientEmailReceive")
     fun clientEmailSend(): SubscribableChannel
 
-    @Input("EmailUpdate")
+    @Input("EmailUpdateReceive")
     fun emailUpdateEvent(): SubscribableChannel
 
-    @Input("clickTrackEvent")
+    @Input("clickTrackEventReceive")
     fun clickTrackEvent(): SubscribableChannel
 
-
-//    @Output("emailEvent")
-//    fun outputEmailEvent(): MessageChannel
 }
