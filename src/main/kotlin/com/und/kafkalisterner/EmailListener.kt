@@ -24,8 +24,10 @@ class EmailListener {
     }
 
 
-    @StreamListener("clickTrackEventReceive")
-    fun sendEmail(email: Email) {
+
+
+    @StreamListener("emailEventSend")
+    fun sendEmaiCampaignl(email: Email) {
         emailService.sendEmail(email)
     }
 

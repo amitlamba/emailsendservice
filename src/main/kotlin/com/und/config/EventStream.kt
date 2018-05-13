@@ -21,4 +21,7 @@ interface EventStream {
     @Input("clickTrackEventReceive")
     fun clickTrackEvent(): SubscribableChannel
 
+    @Input("campaignTriggerReceive")
+    fun campaignTriggerReceive(): SubscribableChannel
+
 }

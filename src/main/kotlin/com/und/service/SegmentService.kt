@@ -1,5 +1,6 @@
 package com.und.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.Gson
 import com.und.model.jpa.Segment
 import com.und.model.mongo.EventUser
@@ -13,6 +14,9 @@ import com.und.model.utils.Segment as WebSegment
 class SegmentService {
 
     @Autowired
+    private lateinit var objectMapper: ObjectMapper
+
+    @Autowired
     private lateinit var segmentRepository: SegmentRepository
 
     fun getSegment(segmentId: Long, clientId: Long): Segment {
@@ -21,7 +25,7 @@ class SegmentService {
     }
 
     private fun buildWebSegment(segment: Segment): WebSegment {
-        val websegment = Gson().fromJson(segment.data, WebSegment::class.java)
+        val websegment = objectMapper.readValue(segment.data, WebSegment::class.java)
         with(websegment) {
             id = segment.id
             name = segment.name

@@ -36,16 +36,16 @@ class EmailSendService {
     }
 
     @Autowired
-    lateinit private var serviceProviderCredentialsRepository: ServiceProviderCredentialsRepository
+    private lateinit var serviceProviderCredentialsRepository: ServiceProviderCredentialsRepository
 
     @Autowired
-    lateinit private var serviceProviderCredentialsService: ServiceProviderCredentialsService
+    private lateinit var serviceProviderCredentialsService: ServiceProviderCredentialsService
 
     @Autowired
-    lateinit private var emailSentRepository: EmailSentRepository
+    private lateinit var emailSentRepository: EmailSentRepository
 
     @Autowired
-    lateinit private var emailServiceProviderConnectionFactory: EmailServiceProviderConnectionFactory
+    private lateinit var emailServiceProviderConnectionFactory: EmailServiceProviderConnectionFactory
 
     @Autowired
     private lateinit var eventUserRepository: EventUserRepository
@@ -158,7 +158,7 @@ class EmailSendService {
     fun updateEmailStatus(mongoEmailId: String, emailStatus: EmailStatus, clientId: Long, clickTrackEventId: String? = null) {
         TenantProvider().setTenant(clientId.toString())
         var mongoEmail: com.und.model.mongo.Email = emailSentRepository.findById(mongoEmailId).get()
-        if (mongoEmail.emailStatus.order < emailStatus.order ) {
+        if (mongoEmail.emailStatus.order < emailStatus.order) {
             mongoEmail.emailStatus = EmailStatus.READ
             mongoEmail.statusUpdates.add(EmailStatusUpdate(Date(), emailStatus, clickTrackEventId))
             emailSentRepository.save(mongoEmail)
@@ -182,7 +182,7 @@ class EmailSendService {
     private fun getCredentialsAndSendEmail(email: Email) {
         synchronized(email.clientID) {
             //TODO: This code can be cached in Redis
-            if(!wspCredsMap.containsKey(email.clientID)) {
+            if (!wspCredsMap.containsKey(email.clientID)) {
                 val serviceProviderCreds = serviceProviderCredentialsRepository.findByClientIDAndServiceProviderTypeAndStatus(email.clientID, "Email Service Provider", Status.ACTIVE).first()
                 val wspCreds = serviceProviderCredentialsService.buildWebServiceProviderCredentials(serviceProviderCreds)
                 wspCredsMap.put(email.clientID, wspCreds)

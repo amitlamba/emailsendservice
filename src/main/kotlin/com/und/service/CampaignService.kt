@@ -1,6 +1,7 @@
 package com.und.service
 
 import com.und.config.EventStream
+import com.und.model.jpa.Campaign
 import com.und.model.mongo.EventUser
 import com.und.model.utils.Email
 import com.und.repository.CampaignRepository
@@ -29,36 +30,40 @@ class CampaignService {
     fun executeCampaign(campaignId: Long, clientId: Long) {
         val campaign = campaignRepository.getCampaignByCampaignId(campaignId, clientId)
         val usersData = getUsersData(campaign?.segmentId ?: 0, clientId)
-        usersData.forEach {
+        usersData.forEach { user->
             try {
-                var email: Email = Email(
-                        clientId,
-                        InternetAddress.parse(campaign?.fromEmailAddress, false)[0],
-                        InternetAddress.parse(it.identity.email, false),
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        campaign?.emailTemplateId
-                )
+                val email: Email = email(clientId, campaign, user)
                 toKafka(email)
             } catch (ex: Exception) {
                 logger.error(ex.message)
-                ex.printStackTrace()
-                //TODO: Catch the exception
+
             } finally {
-                //TODO: Handle Finally clause
+
             }
         }
     }
 
+    private fun email(clientId: Long, campaign: Campaign?, user: EventUser): Email {
+        return Email(
+                clientId,
+                InternetAddress.parse(campaign?.fromEmailAddress, false)[0],
+                InternetAddress.parse(user.identity.email, false),
+                null,
+                null,
+                null,
+                null,
+                null,
+                campaign?.emailTemplateId
+        )
+    }
+
     fun getUsersData(segmentId: Long, clientId: Long): List<EventUser> {
         val segment = segmentService.getWebSegment(segmentId, clientId)
-        val userData: List<EventUser> = segmentService.getUserData(segment)
-        return userData
+        return segmentService.getUserData(segment)
     }
 
     fun toKafka(email: Email): Boolean =
             eventStream.emailEventSend().send(MessageBuilder.withPayload(email).build())
+
+
 }
