@@ -9,14 +9,14 @@ import org.springframework.stereotype.Repository
 interface CampaignRepository: JpaRepository<Campaign, Long> {
 
     @Query("""select
-                      c.id as campaignId,
-                      c.segmentation_id as segmentId,
-                      c.campaign_type as campaignType,
-                      ec.email_template_id as emailTemplateId,
-                      sc.sms_template_id as smsTemplateId,
-                      et.from_user as fromEmailAddress,
-                      st.from_user as fromSMSUser,
-                      c.client_id as clientId
+                      c.id,
+                      c.segmentation_id,
+                      c.campaign_type,
+                      ec.email_template_id,
+                      sc.sms_template_id,
+                      et.from_user as email_from_user,
+                      st.from_user as sms_from_user,
+                      c.client_id
                     from campaign c
                       LEFT JOIN email_campaign ec on c.id = ec.campaign_id and ec.client_id = c.client_id
                       LEFT JOIN sms_campaign sc on c.id = sc.campaign_id and sc.client_id = c.client_id

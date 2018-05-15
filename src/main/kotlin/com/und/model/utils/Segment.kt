@@ -43,7 +43,7 @@ class DateFilter {
 
 class PropertyFilter {
     var name: String = ""
-    var type: PropertyType = PropertyType.String
+    var type: PropertyType = PropertyType.string
     var filterType: PropertyFilterType = PropertyFilterType.UTM
     var operator: String = ""
     var values: List<String> = listOf()
@@ -51,7 +51,7 @@ class PropertyFilter {
 }
 
 enum class PropertyType {
-     String ,
+     string ,
      number,
      date
 }
