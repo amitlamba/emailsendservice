@@ -22,6 +22,7 @@ import com.und.utils.TenantProvider
 import com.und.utils.loggerFor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import java.util.*
 import javax.mail.Message
 import javax.mail.Session
@@ -152,6 +153,10 @@ class EmailSendService {
         )
         TenantProvider().setTenant(email.clientID.toString())
         val s = emailSentRepository.save(mongoEmail)
+
+        if(email.emailBody != null && s!=null && s.id != null)
+            templateContentCreationService.trackAllURLs(email.emailBody!!, email.clientID, s.id!!)
+
         return s.id
     }
 
@@ -160,7 +165,7 @@ class EmailSendService {
         var mongoEmail: com.und.model.mongo.Email = emailSentRepository.findById(mongoEmailId).get()
         if (mongoEmail.emailStatus.order < emailStatus.order) {
             mongoEmail.emailStatus = EmailStatus.READ
-            mongoEmail.statusUpdates.add(EmailStatusUpdate(Date(), emailStatus, clickTrackEventId))
+            mongoEmail.statusUpdates.add(EmailStatusUpdate(LocalDateTime.now(), emailStatus, clickTrackEventId))
             emailSentRepository.save(mongoEmail)
         }
     }

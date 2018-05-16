@@ -1,40 +1,41 @@
-package com.und.service
+package com.und
 
-import com.und.utils.loggerFor
-import freemarker.template.Configuration
-import freemarker.template.Template
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils
+import org.junit.Test
+import java.util.regex.PatternSyntaxException
+import org.springframework.test.context.transaction.TestTransaction.end
 import java.net.URLEncoder
 import java.util.regex.Pattern
+import java.util.regex.Pattern.CASE_INSENSITIVE
 
-@Service
-class TemplateContentCreationService {
 
-    companion object {
-        val logger = loggerFor(TemplateContentCreationService::class.java)
-    }
 
-    @Autowired
-    private lateinit var fmConfiguration: Configuration
+
+
+class Test {
+
     val urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)"
     val trackingURL = "https://userndot.com/event/track"
     val excludeTrackingURLs = arrayOf(
-            "^(https?|ftp)://userndot.com.*\$"
+            "^(https?|ftp)://(www.)?userndot.com.*\$"
     )
 
-    fun getContentFromTemplate(name: String, templateContent: String, model: Map<String, Any>): String {
-        val content = StringBuffer()
-
+    @Test
+    fun parseUrls() {
+        val test = """something https://google.com?a=1
+            something https://google.com?a=2
+            something http://userndot.com?url=https%3A%2F%2Fgoogle.com%3Fa%3D2"""
         try {
-            var template: Template = Template(name, templateContent, fmConfiguration)
-            content.append(FreeMarkerTemplateUtils.processTemplateIntoString(template, model))
-        } catch (e: Exception) {
-            logger.error(e.message)
+            val replacedText = trackAllURLs(test, 1L, "abc")
+            println(test)
+            println(replacedText)
+        } catch (ex: PatternSyntaxException) {
+            // Syntax error in the regular expression
+        } catch (ex: IllegalArgumentException) {
+            // Syntax error in the replacement text (unescaped $ signs?)
+        } catch (ex: IndexOutOfBoundsException) {
+            // Non-existent backreference used the replacement text
         }
 
-        return content.toString()
     }
 
     fun trackAllURLs(content: String, clientId: Long, mongoEmailId: String): String {
