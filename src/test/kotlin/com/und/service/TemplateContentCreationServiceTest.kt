@@ -1,34 +1,43 @@
 package com.und.service
 
 import com.und.model.mongo.EventUser
-import com.und.model.mongo.Identity
+import freemarker.template.Configuration
+import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringRunner
+import org.mockito.InjectMocks
+import org.mockito.MockitoAnnotations
+import org.springframework.test.util.ReflectionTestUtils
+import org.hamcrest.CoreMatchers.`is` as Is
 
-@RunWith(SpringRunner::class)
-@SpringBootTest
 class TemplateContentCreationServiceTest {
 
-    @Autowired
+    @InjectMocks
     private lateinit var templateContentCreationService: TemplateContentCreationService
+
+    private  var fmConfiguration: Configuration = Configuration()
+
+
+    @Before
+    fun setup() {
+        MockitoAnnotations.initMocks(this)
+        ReflectionTestUtils.setField(templateContentCreationService, "fmConfiguration", fmConfiguration)
+
+    }
 
     @Test
     fun testEmailContentCreation() {
-        val content = "Hello, \${user.firstname} \${user.lastname}"
-        println("content: ${content}")
+        val content = "Hello, \${ user.standardInfo.firstname} \${ user.standardInfo.lastname}"
         val name = "Sample Template"
         val converted = templateContentCreationService.getContentFromTemplate(name, content, getModelMap())
-        println("converted: ${converted}")
-        assert(converted.contentEquals("Hello, Amit Lamba"))
+        Assert.assertThat(converted, Is("Hello, Amit Lamba"))
     }
 
     fun getModelMap(): Map<String, Any> {
-        var map: MutableMap<String, Any> = mutableMapOf()
-        map.put("user",EventUser())
-        println("map: ${map}")
-        return map
+        val user = EventUser()
+        user.standardInfo.firstname = "Amit"
+        user.standardInfo.lastname = "Lamba"
+       // return  mutableMapOf("firstname" to "Amit", "lastname" to "Lamba")
+        return  mutableMapOf("user" to user)
     }
 }
