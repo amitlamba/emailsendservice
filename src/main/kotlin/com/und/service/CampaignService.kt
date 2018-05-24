@@ -30,7 +30,7 @@ class CampaignService {
     fun executeCampaign(campaignId: Long, clientId: Long) {
         val campaign = campaignRepository.getCampaignByCampaignId(campaignId, clientId)
         val usersData = getUsersData(campaign?.segmentId ?: 0, clientId)
-        usersData.forEach { user->
+        usersData.forEach { user ->
             try {
                 val email: Email = email(clientId, campaign, user)
                 toKafka(email)
@@ -53,7 +53,8 @@ class CampaignService {
                 null,
                 null,
                 null,
-                campaign?.emailTemplateId
+                campaign?.emailTemplateId ?: 0L,
+                campaign?.emailTemplateName ?: ""
         )
     }
 

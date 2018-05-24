@@ -19,46 +19,34 @@ class SegmentService {
     @Autowired
     private lateinit var segmentRepository: SegmentRepository
 
+    @Autowired
+    private lateinit var segmentUserServiceClient: SegmentUserServiceClient
+
     fun getSegment(segmentId: Long, clientId: Long): Segment {
-        val segment = segmentRepository.getSegmentByIdAndClientID(segmentId, clientId)
-        return segment
+        return segmentRepository.getSegmentByIdAndClientID(segmentId, clientId)
     }
 
     private fun buildWebSegment(segment: Segment): WebSegment {
         val websegment = objectMapper.readValue(segment.data, WebSegment::class.java)
-        with(websegment) {
-            id = segment.id
-            name = segment.name
-            type = segment.type
-        }
+        websegment.id = segment.id
+        websegment.name = segment.name
+        websegment.type = segment.type
         return websegment
     }
 
     fun getWebSegment(segmentId: Long, clientId: Long): WebSegment {
         val segment = getSegment(segmentId, clientId)
-        val webSegment = buildWebSegment(segment)
-        return webSegment
+        return buildWebSegment(segment)
     }
 
     fun getUserData(webSegment: WebSegment): List<EventUser> {
         //TODO: Write the definition to get data from Mongo here
-        return listOf(createEventUser())
+
+        val segmentId = webSegment.id
+        return if (segmentId != null) {
+            segmentUserServiceClient.users(segmentId)
+        } else emptyList()
     }
 
-    fun createEventUser(): EventUser {
 
-        val eventUserDb = EventUser()
-        with(eventUserDb.standardInfo) {
-
-            firstname = "Amit"
-            lastname = "Lamba"
-            country = "India"
-        }
-        with(eventUserDb.identity) {
-            clientUserId = "100"
-            email = "amit@userndot.com"
-        }
-
-        return eventUserDb
-    }
 }

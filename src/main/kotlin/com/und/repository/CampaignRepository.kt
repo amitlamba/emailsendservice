@@ -6,13 +6,14 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CampaignRepository: JpaRepository<Campaign, Long> {
+interface CampaignRepository : JpaRepository<Campaign, Long> {
 
     @Query("""select
                       c.id,
                       c.segmentation_id,
                       c.campaign_type,
                       ec.email_template_id,
+                      et.name as email_template_name,
                       sc.sms_template_id,
                       et.from_user as email_from_user,
                       st.from_user as sms_from_user,

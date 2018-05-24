@@ -1,8 +1,13 @@
 package com.und.model.jpa
 
-import com.und.model.utils.EmailMessageType
-import javax.persistence.*
 //import javax.validation.constraints.Email
+import com.und.model.utils.MessageType
+import org.hibernate.annotations.Cascade
+import org.hibernate.annotations.CascadeType
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
+import java.time.LocalDateTime
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Null
 
@@ -24,18 +29,24 @@ class EmailTemplate {
     @NotNull
     var appuserID: Long? = null
 
-    @Column(name = "email_template_body")
+    @Column(name = "name")
     @NotNull
-    lateinit var emailTemplateBody: String
+    lateinit var name: String
 
-    @Column(name = "email_template_subject")
-    lateinit var emailTemplateSubject: String
+    @OneToOne(fetch = FetchType.LAZY )
+    @JoinColumn(name="email_template_body")
+    @Cascade(CascadeType.ALL)
+    var emailTemplateBody: Template? = null
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="email_template_subject")
+    @Cascade(CascadeType.ALL)
+    var emailTemplateSubject: Template? = null
 
     @Column(name = "parent_id")
     @Null
     var parentID: Long? = null
 
-    //@Email
     @Column(name = "from_user")
     @NotNull
     lateinit var from: String
@@ -43,9 +54,22 @@ class EmailTemplate {
     @Column(name = "message_type") //Promotional or Transactional
     @NotNull
     @Enumerated(EnumType.STRING)
-    var messageType: EmailMessageType? = null
+    var messageType: MessageType? = null
 
     @Column(name = "tags")
     var tags: String? = null
+
+    @field:CreationTimestamp
+    @Column(name = "date_created")
+    lateinit var dateCreated: LocalDateTime
+
+    @field:UpdateTimestamp
+    @Column(name = "date_modified")
+    lateinit var dateModified: LocalDateTime
+
+//    @Column(name = "status")
+//    @NotNull
+//    @Enumerated(EnumType.STRING)
+//    lateinit var status: Status
 }
 

@@ -1,5 +1,6 @@
 package com.und.model.jpa
 
+//import javax.validation.constraints.Email
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
@@ -7,13 +8,13 @@ import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(name = "service_provider_credentials")
-class ServiceProviderCredentials {
+@Table(name = "template")
+class Template {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "service_provider_credentials_id_seq")
-    @SequenceGenerator(name = "service_provider_credentials_id_seq", sequenceName = "service_provider_credentials_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "template_id_seq")
+    @SequenceGenerator(name = "template_id_seq", sequenceName = "template_id_seq", allocationSize = 1)
     var id: Long? = null
 
     @Column(name = "client_id")
@@ -24,13 +25,14 @@ class ServiceProviderCredentials {
     @NotNull
     var appuserID: Long? = null
 
-    @Column(name = "service_provider_type")
+    @Column(name = "name")
     @NotNull
-    lateinit var serviceProviderType: String
+    lateinit var name: String
 
-    @Column(name = "service_provider")
+    @Column(name = "template")
     @NotNull
-    lateinit var serviceProvider: String
+    lateinit var template: String
+
 
     @field:CreationTimestamp
     @Column(name = "date_created")
@@ -40,13 +42,5 @@ class ServiceProviderCredentials {
     @Column(name = "date_modified")
     lateinit var dateModified: LocalDateTime
 
-    @Column(name = "status")
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    lateinit var status: Status
-
-    @Column(name = "credentials")
-    @NotNull
-    lateinit var credentialsMap: String
 }
 

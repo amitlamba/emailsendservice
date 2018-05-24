@@ -6,7 +6,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cloud.stream.annotation.EnableBinding
 import org.springframework.messaging.support.MessageBuilder
 import org.springframework.test.context.junit4.SpringRunner
 import javax.mail.internet.InternetAddress
@@ -57,7 +56,10 @@ class KafkaProducerTest {
                 fromEmailAddress = InternetAddress(FROM, FROMNAME),
                 toEmailAddresses = arrayOf(InternetAddress(TO)),
                 emailSubject = SUBJECT,
-                emailBody = BODY)
+                emailBody = BODY,
+                emailTemplateId = 0L,
+                emailTemplateName = ""
+                )
         eventStream.emailEventSend().send(MessageBuilder.withPayload(email).build())
     }
 }

@@ -1,5 +1,6 @@
 package com.und.service
 
+import com.und.model.utils.Email
 import com.und.utils.loggerFor
 import freemarker.template.Configuration
 import freemarker.template.Template
@@ -17,21 +18,50 @@ class TemplateContentCreationService {
     }
 
     @Autowired
-    private lateinit var fmConfiguration: Configuration
+    private lateinit var freeMarkerConfig: Configuration
+
+
     val urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)"
     val trackingURL = "https://userndot.com/event/track"
     val excludeTrackingURLs = arrayOf(
             "^(https?|ftp)://userndot.com.*\$"
     )
 
-    fun getContentFromTemplate(name: String, templateContent: String, model: Map<String, Any>): String {
-        val content = StringBuffer()
+    enum class EmailContent(val desc: String) {
+        BODY("body"), SUBJECT("subject")
+    }
 
+
+    fun getEmailSubject(email: Email, model: MutableMap<String, Any>): String {
+        return getContentFromTemplate(email, EmailContent.SUBJECT, model)
+    }
+
+    fun getEmailBody(email: Email, model: MutableMap<String, Any>): String {
+        return getContentFromTemplate(email, EmailContent.BODY, model)
+    }
+
+
+    fun getContentFromTemplate(templateName: String, model: MutableMap<String, Any>): String {
+        val template = freeMarkerConfig.getTemplate(templateName)
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, model)
+    }
+
+
+    private fun getContentFromTemplate(email: Email, contentType: EmailContent, model: MutableMap<String, Any>): String {
+        val name = "${email.clientID}:${email.emailTemplateName}:${contentType.desc}"
+        val template = freeMarkerConfig.getTemplate(name)
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, model)
+    }
+
+    private fun getContentFromTemplate(name: String, templateContent: String, model: Map<String, Any>): String {
+        val content = StringBuilder()
         try {
-            var template: Template = Template(name, templateContent, fmConfiguration)
+            val template = Template(name, templateContent, freeMarkerConfig)
             content.append(FreeMarkerTemplateUtils.processTemplateIntoString(template, model))
         } catch (e: Exception) {
+            //FIXME do something here
             logger.error(e.message)
+            throw Exception("Template content for name $name not found")
         }
 
         return content.toString()
@@ -48,17 +78,17 @@ class TemplateContentCreationService {
         }
 
         var replacedContent = content
-        for(c in containedUrls) {
+        for (c in containedUrls) {
             var skip = false
-            for(exclude in excludeTrackingURLs) {
+            for (exclude in excludeTrackingURLs) {
                 if (c.matches(exclude.toRegex())) {
                     skip = true
                     break
                 }
             }
-            if( skip )
+            if (skip)
                 continue
-            replacedContent = replacedContent.replace(c, "$trackingURL?c=$clientId&e=$mongoEmailId&u="+ URLEncoder.encode(c,"UTF-8"))
+            replacedContent = replacedContent.replace(c, "$trackingURL?c=$clientId&e=$mongoEmailId&u=" + URLEncoder.encode(c, "UTF-8"))
         }
         return replacedContent
     }

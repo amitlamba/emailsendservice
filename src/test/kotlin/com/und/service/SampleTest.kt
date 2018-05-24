@@ -21,7 +21,7 @@ class SampleTest {
 
     // Replace recipient@example.com with a "To" address. If your account
 // is still in the sandbox, this address must be verified.
-    val TO = "amitlamba4198@gmail.com"
+    val TO = "shivprataps@gmail.com"
 
     // Replace smtp_username with your Amazon SES SMTP user name.
     val SMTP_USERNAME = "smtp_username"
@@ -54,14 +54,16 @@ class SampleTest {
 
     @Test
     fun testEmailSend() {
-        val email: Email = Email(clientID = 2,
+        val email = Email(clientID = 2,
                 fromEmailAddress = InternetAddress(FROM, FROMNAME),
                 toEmailAddresses = arrayOf(InternetAddress(TO)),
                 emailSubject = SUBJECT,
-                emailBody = BODY)
+                emailBody = BODY,
+                emailTemplateId = 0L,
+                emailTemplateName = "")
         val emailSMTPConfig = EmailSMTPConfig(null, 1, HOST, PORT, SMTP_USERNAME, SMTP_PASSWORD, CONFIGSET)
 
-        emailSendService.sendEmailBySMTP(null, email)
+        emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
     }
 
     @Test
@@ -70,7 +72,9 @@ class SampleTest {
                 fromEmailAddress = InternetAddress("amit@userndot.com", "Amit from Userndot"),
                 toEmailAddresses = arrayOf(InternetAddress("amitlamba4198@gmail.com")),
                 emailSubject = SUBJECT,
-                emailBody = BODY)
+                emailBody = BODY,
+                emailTemplateId = 0,
+                emailTemplateName = "")
         val emailSMTPConfig = EmailSMTPConfig(null, 1, "email-smtp.us-east-1.amazonaws.com", 587, "AKIAIS6IJSVKWL7VUIIQ", "AlEf0RBhmCMDcTuwDDrl9BonxawtKZrPC2b4Mtn4o2v4", null)
 
         emailSendService.sendEmailBySMTP(emailSMTPConfig, email)

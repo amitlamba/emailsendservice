@@ -21,14 +21,14 @@ class CampaignListener {
         campaignService.executeCampaign(campaignMap["campaignMap"]!!, campaignMap["clientId"]!!)
     }*/
 
-   @StreamListener("campaignTriggerReceive")
+   //@StreamListener("campaignTriggerReceive")
     fun executeCampaign(campaignData: Pair<Long, Long>) {
        try {
            val (campaignId, clientId) = campaignData
            logger.debug("campaign trigger with id $campaignId and $clientId")
            campaignService.executeCampaign(campaignId, clientId)
        }catch (ex:Exception) {
-           logger.error("error occiured", ex)
+         logger.error("error occurred", ex)
        }finally {
            logger.info("complete")
        }

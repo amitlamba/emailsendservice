@@ -17,6 +17,8 @@ class Campaign {
     var campaignType: String? = null
     @Column(name = "email_template_id")
     var emailTemplateId: Long? = null
+    @Column(name = "email_template_name")
+    var emailTemplateName: String? = null
     @Column(name = "sms_template_id")
     var smsTemplateId: Long? = null
     @Column(name = "email_from_user")
