@@ -56,13 +56,14 @@ class EmailService {
         val clientSettings = clientSettingsRepository.findByClientID(email.clientID)
         email.data["unsubscribeLink"] = emailHelperService.getUnsubscribeLink(clientSettings?.unSubscribeLink!!, email.clientID.toInt(), mongoEmailId!!)
         email.data["pixelTrackingPlaceholder"] = """<div><img src=""""+emailHelperService.getImageUrl(email.clientID.toInt(), mongoEmailId)+"""">"""
-        sendEmailWithoutTracking(email)
+        var emailToSend = emailHelperService.updateSubjectAndBody(email)
+        emailToSend.emailBody = emailHelperService.trackAllURLs(emailToSend.emailBody!!, emailToSend.clientID, mongoEmailId)
+        sendEmailWithoutTracking(emailToSend)
         emailHelperService.updateEmailStatus(mongoEmailId!!, SENT, email.clientID)
     }
 
     fun sendEmailWithoutTracking(email: Email) {
-        val emailToSend = emailHelperService.updateSubjectAndBody(email)
-        val serviceProviderCredential = serviceProviderCredentials(email = emailToSend)
+        val serviceProviderCredential = serviceProviderCredentials(email = email)
         sendEmail(serviceProviderCredential, email)
     }
 

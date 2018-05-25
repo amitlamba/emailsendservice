@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.net.URLEncoder
 import java.time.LocalDateTime
+import java.util.regex.Pattern
 import javax.mail.Message
 import javax.mail.Session
 import javax.mail.internet.MimeMessage
@@ -33,6 +34,12 @@ class EmailHelperService {
 
     @Value("\${und.url.event}")
     private lateinit var eventApiUrl: String
+
+    val urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)"
+    val trackingURL = "https://userndot.com/event/track"
+    val excludeTrackingURLs = arrayOf(
+            "^(https?|ftp)://(www.)?userndot.com.*\$"
+    )
 
     fun createMimeMessage(session: Session, email: Email): MimeMessage {
         val emailSMTPConfig = emailServiceProviderConnectionFactory.getEmailServiceProvider(email.clientID)
@@ -132,4 +139,29 @@ class EmailHelperService {
         return "$eventApiUrl/email/image/${URLEncoder.encode(URLEncoder.encode(encrypt(id), "UTF-8"), "UTF-8")}.jpg"
     }
 
+    fun trackAllURLs(content: String, clientId: Long, mongoEmailId: String): String {
+        val containedUrls = ArrayList<String>()
+        val pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE)
+        val urlMatcher = pattern.matcher(content)
+
+        while (urlMatcher.find()) {
+            containedUrls.add(content.substring(urlMatcher.start(0),
+                    urlMatcher.end(0)))
+        }
+
+        var replacedContent = content
+        for(c in containedUrls) {
+            var skip = false
+            for(exclude in excludeTrackingURLs) {
+                if (c.matches(exclude.toRegex())) {
+                    skip = true
+                    break
+                }
+            }
+            if( skip )
+                continue
+            replacedContent = replacedContent.replace(c, "$trackingURL?c=$clientId&e=$mongoEmailId&u="+ URLEncoder.encode(c,"UTF-8"))
+        }
+        return replacedContent
+    }
 }
