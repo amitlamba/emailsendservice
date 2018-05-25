@@ -15,6 +15,7 @@ import com.und.model.utils.Email
 import com.und.model.utils.EmailSESConfig
 import com.und.model.utils.EmailSMTPConfig
 import com.und.model.utils.ServiceProviderCredentials
+import com.und.repository.ClientSettingsRepository
 import com.und.utils.loggerFor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -31,6 +32,8 @@ class EmailService {
     @Autowired
     private lateinit var serviceProviderCredentialsService: ServiceProviderCredentialsService
 
+    @Autowired
+    private lateinit var clientSettingsRepository: ClientSettingsRepository
 
     @Autowired
     private lateinit var emailHelperService: EmailHelperService
@@ -49,10 +52,18 @@ class EmailService {
     }
 
     fun sendEmail(email: Email) {
+        val mongoEmailId = emailHelperService.saveMailInMongo(email, NOT_SENT)
+        val clientSettings = clientSettingsRepository.findByClientID(email.clientID)
+        email.data["unsubscribeLink"] = emailHelperService.getUnsubscribeLink(clientSettings?.unSubscribeLink!!, email.clientID.toInt(), mongoEmailId!!)
+        email.data["pixelTrackingPlaceholder"] = """<div><img src=""""+emailHelperService.getImageUrl(email.clientID.toInt(), mongoEmailId)+"""">"""
+        sendEmailWithoutTracking(email)
+        emailHelperService.updateEmailStatus(mongoEmailId!!, SENT, email.clientID)
+    }
+
+    fun sendEmailWithoutTracking(email: Email) {
         val emailToSend = emailHelperService.updateSubjectAndBody(email)
         val serviceProviderCredential = serviceProviderCredentials(email = emailToSend)
         sendEmail(serviceProviderCredential, email)
-        emailHelperService.saveMailInMongo(email, SENT)
     }
 
     private fun sendEmail(serviceProviderCredential: ServiceProviderCredentials, email: Email) {

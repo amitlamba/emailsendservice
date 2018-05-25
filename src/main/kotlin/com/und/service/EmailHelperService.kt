@@ -1,5 +1,6 @@
 package com.und.service
 
+import com.und.common.utils.encrypt
 import com.und.factory.EmailServiceProviderConnectionFactory
 import com.und.model.mongo.EmailStatus
 import com.und.model.mongo.EmailStatusUpdate
@@ -8,8 +9,11 @@ import com.und.model.utils.EmailSMTPConfig
 import com.und.model.utils.ServiceProviderCredentials
 import com.und.repository.EmailSentRepository
 import com.und.utils.TenantProvider
+import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.net.URLEncoder
 import java.time.LocalDateTime
 import javax.mail.Message
 import javax.mail.Session
@@ -26,6 +30,9 @@ class EmailHelperService {
 
     @Autowired
     private lateinit var emailServiceProviderConnectionFactory: EmailServiceProviderConnectionFactory
+
+    @Value("\${und.url.event}")
+    private lateinit var eventApiUrl: String
 
     fun createMimeMessage(session: Session, email: Email): MimeMessage {
         val emailSMTPConfig = emailServiceProviderConnectionFactory.getEmailServiceProvider(email.clientID)
@@ -97,5 +104,32 @@ class EmailHelperService {
 
     fun closeTransport(clientId:Long) = emailServiceProviderConnectionFactory.closeSMTPTransportConnection(clientId)
 
+
+    fun insertUnsubscribeLinkIfApplicable(content: String, unsubscribeLink: String, clientId: Int, mongoEmailId: String): String {
+        val unsubscribePlaceholder: String = "##UND_UNSUBSCRIBE_LINK##"
+        var qmark: String = if (unsubscribeLink.contains('?')) "&" else "?"
+        return content.replace(unsubscribePlaceholder, "$unsubscribeLink$qmark"+"c=$clientId&e=$mongoEmailId")
+    }
+
+    fun getUnsubscribeLink(clientUnsubscribeLink: String, clientId: Int, mongoEmailId: String): String {
+        var qmark: String = if (clientUnsubscribeLink.contains('?')) "&" else "?"
+        return "$clientUnsubscribeLink$qmark"+"c=$clientId&e=$mongoEmailId"
+    }
+
+    fun addPixelTracking(content: String, clientId: Int, mongoEmailId: String): String {
+        var doc = Jsoup.parse(content)
+        val imageUrl = getImageUrl(clientId, mongoEmailId)
+        doc.body().append("""<div><img src="$imageUrl"></div>""")
+        return doc.body().html().toString()
+    }
+
+    fun getImageUrl(clientId: Int, mongoEmailId: String): String {
+        val id = clientId.toString()+"###"+mongoEmailId
+        return getImageUrl(id)
+    }
+
+    private fun getImageUrl(id: String): String {
+        return "$eventApiUrl/email/image/${URLEncoder.encode(URLEncoder.encode(encrypt(id), "UTF-8"), "UTF-8")}.jpg"
+    }
 
 }

@@ -35,9 +35,7 @@ class EmailListener {
     @StreamListener("clientEmailReceive")
     fun sendClientEmail(email: Email) {
         email.clientID = 1
-        val emailSMTPConfig = emailServiceProviderCredentialsFactory
-                .getEmailServiceProvider(email.clientID)
-        emailService.sendEmailBySMTP(emailSMTPConfig, email)
+        emailService.sendEmail(email)
     }
 
     @StreamListener("EmailUpdateReceive")

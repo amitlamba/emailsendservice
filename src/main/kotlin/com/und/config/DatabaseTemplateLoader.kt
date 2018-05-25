@@ -5,6 +5,7 @@ import com.und.model.redis.CachedTemplate
 import com.und.repository.TemplateRepository
 import com.und.repository.redis.TemplateCacheRepository
 import freemarker.cache.TemplateLoader
+import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.Reader
@@ -39,6 +40,7 @@ class DatabaseTemplateLoader : TemplateLoader {
         val template = templateRepository.findByName(name)
         if(template.isPresent) {
             val template = template.get()
+            template.template = addPixelTrackingPlaceholder(template.template)
             val cachedTemplate = CachedTemplate()
             cachedTemplate.id = template.name
             cachedTemplate.dateModified = template.dateModified
@@ -48,5 +50,11 @@ class DatabaseTemplateLoader : TemplateLoader {
             return template
         }
         return null
+    }
+
+    private fun addPixelTrackingPlaceholder(content: String): String {
+        var doc = Jsoup.parse(content)
+        doc.body().append("\${pixelTrackingPlaceholder}")
+        return doc.body().html().toString()
     }
 }
