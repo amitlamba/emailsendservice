@@ -17,6 +17,7 @@ import com.und.model.utils.EmailSMTPConfig
 import com.und.model.utils.ServiceProviderCredentials
 import com.und.repository.ClientSettingsRepository
 import com.und.utils.loggerFor
+import org.apache.commons.lang.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import com.amazonaws.services.simpleemail.model.Message as SESMessage
@@ -44,18 +45,21 @@ class EmailService {
     private var wspCredsMap: MutableMap<Long, ServiceProviderCredentials> = mutableMapOf()
 
 
-    fun sendEmailBySMTP(emailSMTPConfig: EmailSMTPConfig, email: Email){
-        emailSendService.sendEmailBySMTP(emailSMTPConfig,email)
+    fun sendEmailBySMTP(emailSMTPConfig: EmailSMTPConfig, email: Email) {
+        emailSendService.sendEmailBySMTP(emailSMTPConfig, email)
     }
+
     fun sendEmailByAWSSDK(emailSESConfig: EmailSESConfig, email: Email) {
         emailSendService.sendEmailByAWSSDK(emailSESConfig, email)
     }
 
     fun sendEmail(email: Email) {
         val mongoEmailId = emailHelperService.saveMailInMongo(email, NOT_SENT)
+        //FIXME: cache the findByClientID clientSettings
         val clientSettings = clientSettingsRepository.findByClientID(email.clientID)
-        email.data["unsubscribeLink"] = emailHelperService.getUnsubscribeLink(clientSettings?.unSubscribeLink!!, email.clientID.toInt(), mongoEmailId!!)
-        email.data["pixelTrackingPlaceholder"] = """<div><img src=""""+emailHelperService.getImageUrl(email.clientID.toInt(), mongoEmailId)+"""">"""
+        if (StringUtils.isNotBlank(clientSettings?.unSubscribeLink))
+            email.data["unsubscribeLink"] = emailHelperService.getUnsubscribeLink(clientSettings?.unSubscribeLink!!, email.clientID.toInt(), mongoEmailId!!)
+        email.data["pixelTrackingPlaceholder"] = """<div><img src="""" + emailHelperService.getImageUrl(email.clientID.toInt(), mongoEmailId!!) + """">"""
         var emailToSend = emailHelperService.updateSubjectAndBody(email)
         emailToSend.emailBody = emailHelperService.trackAllURLs(emailToSend.emailBody!!, emailToSend.clientID, mongoEmailId)
         sendEmailWithoutTracking(emailToSend)
@@ -86,14 +90,12 @@ class EmailService {
         synchronized(email.clientID) {
             //TODO: This code can be cached in Redis
             if (!wspCredsMap.containsKey(email.clientID)) {
-                val webServiceProviderCred =serviceProviderCredentialsService.getServiceProviderCredentials(email)
+                val webServiceProviderCred = serviceProviderCredentialsService.getServiceProviderCredentials(email)
                 wspCredsMap[email.clientID] = webServiceProviderCred
             }
         }
-       return  wspCredsMap[email.clientID]!!
+        return wspCredsMap[email.clientID]!!
     }
-
-
 
 
 }

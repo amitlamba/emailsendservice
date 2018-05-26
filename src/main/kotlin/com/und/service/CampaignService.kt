@@ -32,6 +32,10 @@ class CampaignService {
         val usersData = getUsersData(campaign?.segmentId ?: 0, clientId)
         usersData.forEach { user ->
             try {
+                //TODO: filter out unsubscribed and blacklisted users
+                //TODO: How to skip transactional Messages
+                if(user.communication?.email?.dnd == true)
+                    return@forEach //Local lambda return
                 val email: Email = email(clientId, campaign, user)
                 toKafka(email)
             } catch (ex: Exception) {

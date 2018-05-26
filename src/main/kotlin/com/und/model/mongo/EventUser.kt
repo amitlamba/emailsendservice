@@ -16,6 +16,7 @@ class EventUser {
         var standardInfo: StandardInfo = StandardInfo()
         val additionalInfo: HashMap<String, Any> = hashMapOf()
         var creationTime: Long = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()
+        var communication: Communication? = null
 }
 
 
