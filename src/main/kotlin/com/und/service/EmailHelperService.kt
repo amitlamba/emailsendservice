@@ -6,7 +6,6 @@ import com.und.model.mongo.EmailStatus
 import com.und.model.mongo.EmailStatusUpdate
 import com.und.model.utils.Email
 import com.und.model.utils.EmailSMTPConfig
-import com.und.model.utils.ServiceProviderCredentials
 import com.und.repository.EmailSentRepository
 import com.und.utils.TenantProvider
 import org.jsoup.Jsoup

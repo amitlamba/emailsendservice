@@ -1,4 +1,4 @@
-package com.und.repository
+package com.und.repository.jpa
 import com.und.model.jpa.ServiceProviderCredentials
 import com.und.model.jpa.Status
 import org.springframework.data.jpa.repository.JpaRepository

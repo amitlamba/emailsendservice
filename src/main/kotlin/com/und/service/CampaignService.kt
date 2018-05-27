@@ -4,7 +4,7 @@ import com.und.config.EventStream
 import com.und.model.jpa.Campaign
 import com.und.model.mongo.EventUser
 import com.und.model.utils.Email
-import com.und.repository.CampaignRepository
+import com.und.repository.jpa.CampaignRepository
 import com.und.utils.loggerFor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.support.MessageBuilder

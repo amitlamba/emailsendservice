@@ -1,11 +1,9 @@
 package com.und.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.gson.Gson
 import com.und.model.jpa.Segment
 import com.und.model.mongo.EventUser
-import com.und.model.mongo.Identity
-import com.und.repository.SegmentRepository
+import com.und.repository.jpa.SegmentRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import com.und.model.utils.Segment as WebSegment

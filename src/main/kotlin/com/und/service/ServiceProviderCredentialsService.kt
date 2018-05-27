@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.und.model.jpa.*
 import com.und.model.jpa.ServiceProviderCredentials
 import com.und.model.utils.*
-import com.und.repository.ServiceProviderCredentialsRepository
+import com.und.repository.jpa.ServiceProviderCredentialsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import com.und.model.utils.ServiceProviderCredentials as WebServiceProviderCredentials

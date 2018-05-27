@@ -8,7 +8,6 @@ import com.amazonaws.services.simpleemail.model.Body
 import com.amazonaws.services.simpleemail.model.Content
 import com.amazonaws.services.simpleemail.model.Destination
 import com.amazonaws.services.simpleemail.model.SendEmailRequest
-import com.und.common.utils.encrypt
 import com.und.model.mongo.EmailStatus.NOT_SENT
 import com.und.model.utils.Email
 import com.und.model.utils.EmailSESConfig
@@ -18,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import com.amazonaws.services.simpleemail.model.Message as SESMessage
 import org.jsoup.Jsoup
-import org.springframework.beans.factory.annotation.Value
-import java.net.URLEncoder
 
 
 @Service

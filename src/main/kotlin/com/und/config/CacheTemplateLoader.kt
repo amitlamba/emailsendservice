@@ -1,8 +1,6 @@
 package com.und.config
 
-import com.und.model.jpa.Template
 import com.und.model.redis.CachedTemplate
-import com.und.repository.TemplateRepository
 import com.und.repository.redis.TemplateCacheRepository
 import freemarker.cache.TemplateLoader
 import org.springframework.beans.factory.annotation.Autowired

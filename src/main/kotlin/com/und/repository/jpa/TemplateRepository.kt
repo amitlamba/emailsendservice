@@ -1,4 +1,4 @@
-package com.und.repository
+package com.und.repository.jpa
 
 import com.und.model.jpa.Template
 import org.springframework.data.jpa.repository.JpaRepository

@@ -7,7 +7,7 @@ import com.und.config.DatabaseTemplateLoader
 import com.und.model.jpa.Template
 import com.und.model.mongo.EventUser
 import com.und.model.utils.Email
-import com.und.repository.TemplateRepository
+import com.und.repository.jpa.TemplateRepository
 import freemarker.template.Configuration
 import org.junit.Assert
 import org.junit.Before
